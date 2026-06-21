@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Minh Le — Mechanical Engineering{% endblock %}</title>
+    <meta name="description" content="Portfolio of Minh Le, a mechanical engineering student.">
+    <link rel="stylesheet" href="/css/style.css">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{{ path('app_home') }}" class="logo">Minh Le</a>
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="site-nav" id="site-nav">
+                <a href="{{ path('app_home') }}#about">About</a>
+                <a href="{{ path('app_home') }}#projects">Projects</a>
+                <a href="/resume.pdf">Resume</a>
+                <a href="{{ path('app_home') }}#contact">Contact</a>
+                <div class="nav-social">
+                    <a href="https://linkedin.com/in/your-profile" target="_blank" rel="noopener" aria-label="LinkedIn">{{ include('partials/icon-linkedin.svg.twig') }}</a>
+                    <a href="https://github.com/your-profile" target="_blank" rel="noopener" aria-label="GitHub">{{ include('partials/icon-github.svg.twig') }}</a>
+                    <a href="https://www.instagram.com/benny.minh/" target="_blank" rel="noopener" aria-label="Instagram">{{ include('partials/icon-instagram.svg.twig') }}</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; {{ "now"|date("Y") }} Minh Le. Built with Symfony.</p>
+            <div class="footer-social">
+                <a href="https://linkedin.com/in/your-profile" target="_blank" rel="noopener" aria-label="LinkedIn">{{ include('partials/icon-linkedin.svg.twig') }}</a>
+                <a href="https://github.com/your-profile" target="_blank" rel="noopener" aria-label="GitHub">{{ include('partials/icon-github.svg.twig') }}</a>
+                <a href="mailto:benny.minh@gmail.com" aria-label="Email">{{ include('partials/icon-email.svg.twig') }}</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js" defer></script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

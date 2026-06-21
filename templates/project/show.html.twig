@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ project.title }} — Minh Le{% endblock %}
+
+{% block body %}
+
+<section class="project-detail">
+    <div class="container fade-in">
+        <a href="{{ path('app_home') }}#projects" class="back-link">← Back to projects</a>
+
+        <header class="project-detail-header">
+            <h1>{{ project.title }}</h1>
+            <p class="project-detail-tagline">{{ project.tagline }}</p>
+            <ul class="project-tools">
+                {% for tool in project.tools %}
+                    <li>{{ tool }}</li>
+                {% endfor %}
+            </ul>
+        </header>
+
+        <div class="project-detail-image">
+            <img src="{{ project.image }}" alt="{{ project.title }}">
+        </div>
+
+        <div class="project-detail-body">
+            <p class="project-summary">{{ project.summary }}</p>
+            {% for paragraph in project.description %}
+                <p>{{ paragraph }}</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
