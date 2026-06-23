@@ -6,10 +6,10 @@ export default function Footer() {
             <div className="container footer-inner">
                 <p>&copy; {new Date().getFullYear()} Minh Le. Built with React.</p>
                 <div className="footer-social">
-                    <a href="https://linkedin.com/in/your-profile" target="_blank" rel="noopener" aria-label="LinkedIn">
+                    <a href="https://www.linkedin.com/in/minh-le-26b0103b1/" target="_blank" rel="noopener" aria-label="LinkedIn">
                         <IconLinkedin />
                     </a>
-                    <a href="https://github.com/your-profile" target="_blank" rel="noopener" aria-label="GitHub">
+                    <a href="https://github.com/minhl6" target="_blank" rel="noopener" aria-label="GitHub">
                         <IconGithub />
                     </a>
                     <a href="mailto:benny.minh@gmail.com" aria-label="Email">

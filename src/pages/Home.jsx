@@ -32,7 +32,7 @@ export default function Home() {
                         <div className="hero-actions">
                             <a href="#projects" className="btn btn-primary">View Projects</a>
                             <a href={`${import.meta.env.BASE_URL}resume.pdf`} className="btn btn-secondary">Resume</a>
-                            <a href="https://linkedin.com/in/your-profile" target="_blank" rel="noopener" className="btn btn-secondary">
+                            <a href="https://www.linkedin.com/in/minh-le-26b0103b1/" target="_blank" rel="noopener" className="btn btn-secondary">
                                 LinkedIn
                             </a>
                         </div>
@@ -135,10 +135,10 @@ export default function Home() {
                     </p>
                     <div className="contact-links">
                         <a href="mailto:benny.minh@gmail.com" className="btn btn-primary">benny.minh@gmail.com</a>
-                        <a href="https://linkedin.com/in/your-profile" target="_blank" rel="noopener" className="btn btn-secondary">
+                        <a href="https://www.linkedin.com/in/minh-le-26b0103b1/" target="_blank" rel="noopener" className="btn btn-secondary">
                             LinkedIn
                         </a>
-                        <a href="https://github.com/your-profile" target="_blank" rel="noopener" className="btn btn-secondary">
+                        <a href="https://github.com/minhl6" target="_blank" rel="noopener" className="btn btn-secondary">
                             GitHub
                         </a>
                     </div>

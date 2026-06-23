@@ -35,10 +35,10 @@ export default function Header() {
                     <a href={`${base}resume.pdf`} onClick={closeNav}>Resume</a>
                     <a href={`${base}#contact`} onClick={closeNav}>Contact</a>
                     <div className="nav-social">
-                        <a href="https://linkedin.com/in/your-profile" target="_blank" rel="noopener" aria-label="LinkedIn">
+                        <a href="https://www.linkedin.com/in/minh-le-26b0103b1/" target="_blank" rel="noopener" aria-label="LinkedIn">
                             <IconLinkedin />
                         </a>
-                        <a href="https://github.com/your-profile" target="_blank" rel="noopener" aria-label="GitHub">
+                        <a href="https://github.com/minhl6" target="_blank" rel="noopener" aria-label="GitHub">
                             <IconGithub />
                         </a>
                         <a href="https://www.instagram.com/benny.minh/" target="_blank" rel="noopener" aria-label="Instagram">

@@ -435,6 +435,77 @@ section { padding: 4.5rem 0; }
 
 .project-detail-body p { color: var(--color-muted); margin-bottom: 1.1rem; }
 
+.project-detail-video {
+    max-width: 42rem;
+    margin: 2rem 0;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+}
+
+.project-detail-video iframe,
+.project-detail-video video {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+.project-detail-sections {
+    max-width: 42rem;
+    margin-top: 1rem;
+}
+
+.project-section {
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.project-section:first-child {
+    padding-top: 0;
+    border-top: none;
+}
+
+.project-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+}
+
+.project-section p {
+    color: var(--color-muted);
+    margin-bottom: 1.1rem;
+}
+
+.project-section-images {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.1rem;
+}
+
+.project-section-images img {
+    border-radius: 10px;
+    flex: 1 1 220px;
+    width: 100%;
+}
+
+.project-section-code {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 1.1rem;
+}
+
+.project-section-caption {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+    margin-top: -0.5rem;
+}
+
 /* ---------- scroll animation ---------- */
 .fade-in {
     opacity: 0;
