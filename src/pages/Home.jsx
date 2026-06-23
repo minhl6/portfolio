@@ -46,9 +46,6 @@ export default function Home() {
                         />
                     </div>
                 </div>
-                <a href="#about" className="scroll-cue" aria-label="Scroll down">
-                    <span></span>
-                </a>
             </section>
 
             <section className="about" id="about">

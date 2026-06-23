@@ -6,9 +6,8 @@ export const projects = {
         tools: ['SolidWorks', 'KiCad', 'Arduino', 'JLCPCB', '3D Printing'],
 
         // Card thumbnail + big image at the top of the detail page.
-        // TODO: replace both with the BASE_URL-prefixed path to media/robotic-arm/hero.jpg (a photo of both arms).
-        image: 'https://picsum.photos/seed/robotic-arm/1200/800',
-        hero: 'https://picsum.photos/seed/robotic-arm/1200/800',
+        image: `${import.meta.env.BASE_URL}media/robotic-arm/Main_Photo.jpeg`,
+        hero: `${import.meta.env.BASE_URL}media/robotic-arm/Main_Photo.jpeg`,
 
         summary: 'A 4 degree-of-freedom robotic arm that mirrors a hand-held twin in real time and can record and replay a sequence on its own. I designed and built every part of it: both 3D-printed arms, a custom Arduino shield PCB, and the firmware that ties them together.',
 
@@ -26,12 +25,30 @@ export const projects = {
             {
                 heading: 'Mechanical design',
                 text: 'Both arms are 3D printed in PLA and modeled in SolidWorks. The active arm is about 20 cm tall. I also designed a base enclosure around the electronics so the wiring stays hidden and the build looks like a finished product instead of a prototype.',
-                image: '', // TODO: the BASE_URL-prefixed path to media/robotic-arm/exploded-view.png (SolidWorks exploded view)
+                video: `${import.meta.env.BASE_URL}media/robotic-arm/Full_Model.mp4`,
+                loop: true,
             },
             {
                 heading: 'Custom PCB',
                 text: 'To get off the breadboard, I designed a custom Arduino shield in KiCad, my first board. It connects all four servos and potentiometers, adds status LEDs and mode buttons, and uses a ground pour to keep the analog signals clean. I sized the 5 V power trace using the IPC-2221 standard and had the board manufactured by JLCPCB.',
-                images: ['', ''], // TODO: kicad-schematic.png, kicad-pcb.png
+                carousel: [
+                    {
+                        image: `${import.meta.env.BASE_URL}media/robotic-arm/Robotic_Arm_Schematic.png`,
+                        caption: 'Shield schematic',
+                    },
+                    {
+                        image: `${import.meta.env.BASE_URL}media/robotic-arm/PCB_Layout.png`,
+                        caption: 'PCB layout',
+                    },
+                    {
+                        image: `${import.meta.env.BASE_URL}media/robotic-arm/PCB_Physical.jpeg`,
+                        caption: 'Manufactured by JLCPCB',
+                    },
+                    {
+                        image: `${import.meta.env.BASE_URL}media/robotic-arm/Inside_PCB.jpeg`,
+                        caption: 'PCB fully integrated',
+                    },
+                ],
             },
             {
                 heading: 'Firmware',
@@ -46,6 +63,19 @@ export const projects = {
                 heading: 'Problems I solved',
                 text: "Most of what I ran into turned out to be hardware problems, not bugs in the code. Turning on all four servos at once caused a brief power dip, so I staggered their startup instead. Loose jumper wires made the potentiometer readings jump around and the arm twitch; moving everything onto a soldered custom PCB fixed it, with solid connections and a ground pour to cut electrical noise. The biggest fix was swapping every SG90 for a metal-gear MG90D. The SG90s had loose, sloppy gears, so under load the arm would twitch because the servo couldn't actually hold the angle it thought it was at.",
                 image: '', // TODO: optional build/wiring photo
+            },
+            {
+                heading: 'How it started',
+                blocks: [
+                    {
+                        caption: 'Popsicle sticks and cheap servos taped to a bottle cap.',
+                        image: `${import.meta.env.BASE_URL}media/robotic-arm/Pop_proto.jpeg`,
+                    },
+                    {
+                        caption: '3D printed arm on a breadboard, before the custom PCB.',
+                        image: `${import.meta.env.BASE_URL}media/robotic-arm/3D_printedArm_Early.jpeg`,
+                    },
+                ],
             },
             {
                 heading: "What I'd Do Next",
