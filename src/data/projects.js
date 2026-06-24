@@ -53,10 +53,24 @@ export const projects = {
             {
                 heading: 'Firmware',
                 text: 'The firmware runs in three modes: manual, record, and playback. Getting the movement to look clean was the hardest challenge. I had to smooth out the noisy sensor data, reject readings that jumped too fast to be physically possible, and ease jerky motion by blending between recorded points.',
-                // TODO: paste ~15–25 lines of your REAL firmware here (keep it short).
-                // Best pick: your readSmoothedPot() function, it shows the smoothing and
-                // spike-rejection logic, which is the most interesting self-contained piece.
-                code: '// paste your real Arduino code snippet here',
+                code: `// Reads a pot, applying smoothing (blends pot readings).
+// Returns the raw reading if POT_SMOOTHING_PCT is 100.
+int readSmoothedPot(int joint) {
+  int raw = analogRead(POT_PINS[joint]);
+
+  // Reject sudden spikes due to a loose connection
+  if (abs(raw - smoothedPotValue[joint]) > 80) {
+    return smoothedPotValue[joint];  // ignore this reading entirely
+  }
+
+  // so servos ease into pot positions rather than snapping
+  int pct = (blendFramesRemaining > 0) ? BLEND_SMOOTHING_PCT : POT_SMOOTHING_PCT;
+  if (pct >= 100) return raw;
+  long sum = (long)pct * raw
+           + (long)(100 - pct) * smoothedPotValue[joint];
+  smoothedPotValue[joint] = (int)(sum / 100);
+  return smoothedPotValue[joint];
+}`,
                 language: 'cpp',
             },
             {

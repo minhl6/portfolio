@@ -18,7 +18,7 @@ export function useFadeIn(deps = []) {
                     }
                 });
             },
-            { threshold: 0.15 }
+            { threshold: 0 }
         );
 
         fadeEls.forEach((el) => observer.observe(el));

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { projects } from '../data/projects.js';
 import { useFadeIn } from '../hooks/useFadeIn.js';
+import CodeBlock from '../components/CodeBlock.jsx';
 
 const VIDEO_HOST_PATTERN = /youtube\.com|youtu\.be|vimeo\.com/i;
 
@@ -257,9 +258,7 @@ export default function ProjectDetail() {
                                     )}
 
                                     {section.code && (
-                                        <pre className="project-section-code">
-                                            <code>{section.code}</code>
-                                        </pre>
+                                        <CodeBlock code={section.code} language={section.language} />
                                     )}
 
                                     {section.caption && (

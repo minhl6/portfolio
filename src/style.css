@@ -659,15 +659,42 @@ section { padding: 4.5rem 0; }
     }
 }
 
-.project-section-code {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 1rem 1.25rem;
+.code-block {
+    background: #282c34; /* matches the atom-one-dark theme's own background */
+    border-radius: 12px;
+    padding: 20px 24px;
+    max-height: 480px;
+    overflow-y: auto;
     overflow-x: auto;
-    font-size: 0.85rem;
-    line-height: 1.5;
+    font-family: 'SF Mono', 'Fira Code', Menlo, Consolas, monospace;
+    font-size: 14px;
+    line-height: 1.6;
     margin-bottom: 1.1rem;
+    max-width: 100%;
+}
+
+/* the theme's own pre>code padding/scroll would double up with .code-block's;
+   the outer element owns spacing and scrolling instead */
+.code-block code.hljs {
+    display: block;
+    padding: 0;
+    overflow-x: visible;
+}
+
+.code-block::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.code-block::-webkit-scrollbar-track { background: transparent; }
+
+.code-block::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .project-section-caption {
