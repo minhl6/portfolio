@@ -108,7 +108,7 @@ int readSmoothedPot(int joint) {
             },
         ],
     },
-    'laser-cut-enclosure': {
+    'axial-flux-generator': {
         title: 'Axial Flux Generator',
         category: 'personal',
         tagline: 'Parametric acrylic enclosure for an electronics project',
@@ -121,30 +121,267 @@ int readSmoothedPot(int joint) {
             'Note any lessons learned about kerf compensation, material choice, or fit tolerances.',
         ],
     },
-    'fea-bracket-analysis': {
-        title: 'FEA Bracket Analysis',
+    chompy: {
+        // --- card / routing basics (match existing field names) ---
+        title: 'Chompy: Underwater Retrieval Device',
+        tagline: 'A sheet-metal scooping claw for an APSC 101 design competition',
         category: 'school',
-        tagline: 'Structural optimization of a mounting bracket',
-        image: 'https://picsum.photos/seed/fea-bracket-analysis/1200/800',
-        tools: ['SolidWorks Simulation', 'ANSYS', 'Topology Optimization'],
-        summary: 'A finite element study used to reduce mass in a structural bracket while keeping it within stress and deflection limits.',
-        description: [
-            'Outline the loading conditions, boundary conditions, and material assumptions used in the analysis.',
-            'Show the iteration from initial design to optimized geometry, referencing stress plots or factor-of-safety results.',
-            'Summarize the final mass reduction achieved and how the result was validated.',
+        tools: [
+            'Arduino',
+            'C/C++',
+            'Servo motors',
+            'CAD', // TODO(me): replace with the actual package (Fusion 360 / SolidWorks / Onshape)
+            'Sheet metal fabrication',
         ],
+
+        // Card thumbnail (home grid). No hero banner on the detail page.
+        image: `${import.meta.env.BASE_URL}projects/chompy/card.jpg`,
+        hero: false,
+
+        // --- quick facts strip ---
+        meta: {
+            context: 'APSC 101 · Module 5',
+            team: '6-person team',
+            myFocus: 'Arduino control code & 3D modeling',
+            timeframe: 'First year',
+        },
+
+        // --- Problem ---
+        overview:
+            'For our APSC 101 design project, our team designed a device to retrieve underwater debris of varying shapes and sizes. The system had to be built from limited materials (sheet metal, cardboard, and common craft items) and driven by a servo motor wired to an Arduino, with an optional sonar sensor available. It had to work both fully autonomously and under a human operator whose view of the field was blocked. Our strategy prioritized consistency and simplicity over complexity: a device that did one thing reliably rather than many things unpredictably.',
+
+        // --- What I did (clear individual ownership on a team project) ---
+        contribution: [
+            "Wrote the Arduino/servo control code that drove the claw's open/close cycle.",
+            'Tested the sonar sensor and found it unreliable: it detected non-target objects, struggled to hold an unblocked signal, and added significant code complexity. I flagged it as a strategic risk and replaced it with a timer-based control scheme so the claw operated predictably during competition.',
+            'Produced the 3D models and orthographic assembly drawings of the final design.',
+            'Did sheet-metal fabrication on the claw body and ran jamming tests that exposed a key flaw in an early design.',
+            'Built one of the early prototypes that, while not selected for the final, helped the team narrow the design direction.',
+        ],
+
+        // --- Design process (the narrative arc) ---
+        process: [
+            {
+                phase: 'Concept exploration',
+                body: 'Sketched several early concepts: a net-based expandable holder, an excavator-style scoop claw, and a fishing-net design.',
+                // TODO(me): drop concept sketches at public/projects/chompy/process-concepts.jpg
+                image: `${import.meta.env.BASE_URL}projects/chompy/process-concepts.jpg`,
+                alt: 'Hand-drawn concept sketches of early retrieval-device ideas',
+            },
+            {
+                phase: 'Physical prototyping',
+                body: 'Built and compared three claw types (a four-arm claw, a three-prong claw, and a scoop claw) to test how each handled objects of different sizes.',
+                // TODO(me): drop the three prototypes photo at public/projects/chompy/process-prototypes.jpg
+                image: `${import.meta.env.BASE_URL}projects/chompy/process-prototypes.jpg`,
+                alt: 'Three sheet-metal claw prototypes side by side',
+            },
+            {
+                phase: 'Targeted testing',
+                body: 'Ran focused tests against our biggest technical risks: structural deformation, object jamming, and sonar reliability.',
+                // TODO(me): drop a testing photo at public/projects/chompy/process-testing.jpg
+                image: `${import.meta.env.BASE_URL}projects/chompy/process-testing.jpg`,
+                alt: 'Load and jamming testing of the claw',
+            },
+            {
+                phase: 'Design decision',
+                body: 'Scored the shortlisted designs (Chompy, Tetris, 4 Arms) against weighted criteria: pickup versatility, capacity, strength, complexity, size, and material use. Chompy won at 6.9 as the best all-round "grab-all."',
+                // TODO(me): drop the weighted-comparison chart at public/projects/chompy/process-decision.jpg
+                image: `${import.meta.env.BASE_URL}projects/chompy/process-decision.jpg`,
+                alt: 'Weighted scoring chart comparing the three final designs',
+            },
+            {
+                phase: 'Final design',
+                body: 'Chompy: two smooth circular scoops with a suspended platform above for the Arduino and electronics, documented with 3-view orthographic and isometric drawings.',
+                // TODO(me): drop the orthographic / isometric drawing at public/projects/chompy/process-final-drawing.jpg
+                image: `${import.meta.env.BASE_URL}projects/chompy/process-final-drawing.jpg`,
+                alt: 'Orthographic and isometric assembly drawings of the final claw',
+            },
+        ],
+
+        // --- Key engineering decisions (challenge -> test -> outcome) ---
+        engineering: [
+            {
+                challenge: 'Deformation under load',
+                test: 'Suspended the heaviest competition object from a bent metal sample for 20 seconds.',
+                outcome: 'Samples bent only 0.5-1 mm, with no significant plastic deformation expected in competition.',
+            },
+            {
+                challenge: 'Objects jamming in the claw',
+                test: 'Our first two-prong sheet-metal claw: objects caught and wedged in the bent creases, causing inconsistent releases.',
+                outcome: 'Redesigned to a smooth, bend-free scoop so objects release cleanly every time.',
+            },
+            {
+                challenge: 'Sonar reliability',
+                test: 'Ran distance and code tests with the sonar sensor.',
+                outcome: 'Sonar detected non-target objects and needed an unobstructed signal, so I replaced it with simpler, more reliable timer-based control.',
+            },
+        ],
+
+        // --- Results ---
+        results: {
+            metrics: [
+                { value: '10/15', label: 'items retrieved in Round 1' },
+                { value: '58', label: 'blocks scooped in Round 2 (target: 25)' },
+                { value: '<1 mm', label: 'deformation under the heaviest load' },
+            ],
+            narrative:
+                "Round 1 went as designed: the claw retrieved 10 of 15 items, though a pulley malfunction and the time limit cost us cycles (an unanticipated operational risk). In Round 2 we slowed the crane so the pulley stayed seated, and the claw scooped 58 blocks, more than double our target. In the final team round, Chompy collaborated well with other teams and contributed more than we'd expected.",
+        },
+
+        // --- Reflection ---
+        reflection:
+            "If I did it again, I'd cut the operating cycle from 20 s to under 15 s to leave room for mis-grabs, and practice more with the crane to keep the pulley seated. The biggest lesson was how much a simple, reliable design beats a clever but fragile one: dropping the sonar for a timer is what made our results consistent.",
+
+        // --- Media gallery (photos + videos) ---
+        // TODO(me): drop files into public/projects/chompy/ and update paths/captions below.
+        gallery: [
+            { type: 'image', src: `${import.meta.env.BASE_URL}projects/chompy/action-blocks-round.jpg`, caption: 'Blocks round', alt: 'Chompy scooping small blocks' },
+            { type: 'image', src: `${import.meta.env.BASE_URL}projects/chompy/action-team-round.jpg`, caption: 'Team round', alt: 'Chompy carrying a large object in the team round' },
+            // Videos: host on YouTube (unlisted is fine) and use type: "youtube", or
+            // drop a short compressed clip at public/projects/chompy/demo.mp4 and use type: "video".
+            // { type: 'video', src: `${import.meta.env.BASE_URL}projects/chompy/demo.mp4`, caption: 'Chompy in action' },
+            // { type: 'youtube', id: 'TODO_VIDEO_ID', caption: 'Chompy in action' },
+        ],
+
+        // Plain-text fallback description, kept for parity with the simpler project entries.
+        description:
+            'Chompy is a sheet-metal scooping claw built for an APSC 101 design competition to retrieve underwater debris of varying sizes. On a 6-person team I owned the Arduino control code and the 3D modeling, replaced an unreliable sonar sensor with a timer-based control scheme, and ran fabrication and jamming tests. The final design scooped 58 blocks in the second competition round, more than double our target.',
     },
-    'go-kart-suspension': {
-        title: 'Go-Kart Suspension',
+    'rainwater-harvester': {
+        // --- card / routing basics ---
+        title: 'Rainwater Harvester: System Simulation & Design',
+        tagline: 'A 5-year spreadsheet model to design an off-grid drinking-water system',
         category: 'school',
-        tagline: 'Double wishbone suspension for a student go-kart team',
-        image: 'https://picsum.photos/seed/go-kart-suspension/1200/800',
-        tools: ['SolidWorks', 'Suspension Kinematics', 'Manufacturing'],
-        summary: 'A double wishbone suspension system designed and manufactured as part of a student design team.',
-        description: [
-            'Explain the design targets: ride height, camber/caster behavior, track conditions, and packaging constraints.',
-            'Walk through the kinematic analysis and how it informed control arm geometry.',
-            'Cover manufacturing and testing, including any on-track tuning or changes made after build.',
+        tools: [
+            'Excel',
+            'Spreadsheet simulation',
+            'Fluid mechanics',
+            'Energy systems modeling',
+            'Data analysis',
         ],
+
+        // Card thumbnail (home grid) + big image at the top of the detail page.
+        image: `${import.meta.env.BASE_URL}projects/rwh/card.png`,
+        hero: {
+            image: `${import.meta.env.BASE_URL}projects/rwh/card.png`,
+            alt: 'Diagram of a rainwater harvesting system: catchment, pump, treatment, storage, and supply to a house',
+        },
+
+        // --- quick facts strip ---
+        meta: {
+            context: 'APSC 101 · Module 7 · Cornerstone design project',
+            team: '6-person team (Group M6)',
+            myFocus: 'System simulation: topography, fluids, weather & power modeling',
+            timeframe: 'First year',
+        },
+
+        // --- Problem ---
+        overview:
+            "Module 7 was the first-year cornerstone project: design a rainwater harvesting (RWH) system to supply safe drinking water to an off-grid, two-person household in Van Anda, a remote community on Texada Island, BC. Because the home has no grid power, the system also had to generate its own electricity. Rather than build hardware, each team built a spreadsheet simulation of five years of operation, and every design was scored by the course's independent simulator across eight weighted stakeholder priorities: consumption, cost, health and environmental risk, greenhouse-gas emissions, maintenance, non-potable supply, on-demand flow rate, and reliability.",
+
+        // --- What I did (clear individual ownership on a team project) ---
+        contribution: [
+            "Built the topography model: computed pipe length as a 3-D distance and elevation head from the site's contour map, and made grid-based maps for placing the storage tank and additional catchment within the site's keep-out constraints.",
+            'Modeled five years of weather by assembling multi-station historical rainfall into a daily series, including drier years to stress-test the design against climate variability.',
+            'Built the 5-year catchment simulation: a daily water balance of collection vs. household demand that tracked reliability, how many days the system met full demand, and whether it cleared the 200-day requirement.',
+            'Modeled the on-demand flow to the house, solving iteratively for flow rate given pipe friction, fitting losses, elevation, and filter resistance, capped by the UV unit\'s maximum treatable flow.',
+            'Modeled pump-to-storage by matching the pump\'s pressure and efficiency curves to the system head, finding the daily operating point and the energy needed to refill the tank.',
+            'Built the diesel power model: pumping energy plus the 24/7 UV load, converted to diesel use through generator and battery efficiencies, which became the baseline the team compared against solar.',
+            'Debugged, corrected, and error-checked across nearly all sheets of the shared 17-sheet workbook.',
+        ],
+
+        // --- Design process (the analysis arc) ---
+        process: [
+            {
+                phase: 'Stakeholder priorities → weights',
+                body: 'Turned Van Anda stakeholder needs (reliable water, low long-term cost, low maintenance) into the eight weighted satisfaction criteria the design would be judged on.',
+                // TODO(me): drop the satisfaction-weights pie chart at public/projects/rwh/process-weights.png
+                image: `${import.meta.env.BASE_URL}projects/rwh/process-weights.png`,
+                alt: 'Pie chart of the eight weighted satisfaction criteria',
+            },
+            {
+                phase: 'Subsystem modeling',
+                body: 'Built the workbook as linked subsystems (weather, catchment, storage, fluids and pump, treatment, and power) so each could be tested in the context of the whole system over five years.',
+                // TODO(me): drop the RWH system flow diagram at public/projects/rwh/process-system.png
+                image: `${import.meta.env.BASE_URL}projects/rwh/process-system.png`,
+                alt: 'Flow diagram of the rainwater harvesting subsystems',
+            },
+            {
+                phase: 'Configuration comparison',
+                body: 'Ran each major decision (solar vs. diesel, ozone vs. chlorine, filter choice and placement, catchment area, tank sizes, consumption target, and non-potable inclusion) as a head-to-head satisfaction comparison.',
+                // TODO(me): drop one of the stacked-bar comparison charts (e.g. energy or water treatment) at public/projects/rwh/process-comparison.png
+                image: `${import.meta.env.BASE_URL}projects/rwh/process-comparison.png`,
+                alt: 'Stacked-bar charts comparing configuration options by total satisfaction',
+            },
+            {
+                phase: 'Final design & verification',
+                body: 'Locked in the highest-scoring configuration and verified it against the full 5-year simulation and required checks, including reliability and on-demand flow.',
+                // TODO(me): drop the topography placement map (storage + extra catchment) at public/projects/rwh/process-placement.png
+                image: `${import.meta.env.BASE_URL}projects/rwh/process-placement.png`,
+                alt: 'Topography map showing chosen storage tank and additional catchment locations',
+            },
+        ],
+
+        // --- Key engineering decisions (challenge -> analysis -> outcome) ---
+        engineering: [
+            {
+                challenge: 'Solar vs. diesel power',
+                test: 'Compared a full diesel-generator energy model against a solar-panel system on total satisfaction.',
+                outcome: 'Solar scored higher (≈0.88 vs ≈0.73) on cost, emissions, health, and maintenance, so the team chose 12 solar panels with 5 batteries.',
+            },
+            {
+                challenge: 'Where to place storage & catchment',
+                test: 'Used the contour map to trade off elevation (which improves on-demand flow) against pipe length and pumping energy.',
+                outcome: 'Placed the storage tank at a close, elevated point and added 325 m² of catchment, balancing flow, pressure losses, and piping cost.',
+            },
+            {
+                challenge: 'Catchment tank size',
+                test: 'Compared collection-tank volumes on overall satisfaction.',
+                outcome: 'A 2,500 L tank scored best; larger tanks added cost and maintenance without enough capture gain.',
+            },
+            {
+                challenge: 'Ozone vs. chlorine disinfection',
+                test: 'Compared both chemical-treatment methods on health/environmental risk and cost.',
+                outcome: "Ozone scored higher and avoided chlorine's handling risk and the broken, costly existing chlorine setup.",
+            },
+        ],
+
+        // --- Final design summary (optional spec list) ---
+        finalDesign: [
+            { label: 'Catchment', value: 'Full roof + 325 m² additional (425 m² total)' },
+            { label: 'Catchment tank', value: '2,500 L' },
+            { label: 'Storage tank', value: '30,000 L (30 m³)' },
+            { label: 'Pump', value: 'Pump A' },
+            { label: 'Treatment', value: 'Ozone + 40 W UV; 5 & 200 μm filters (plus required 1 μm)' },
+            { label: 'Power', value: 'Solar: 12× HES-305P panels + 5 batteries + DC-AC inverter' },
+            { label: 'Design target', value: '620 L/day consumption; 29 LPM on-demand flow' },
+        ],
+
+        // --- Results ---
+        results: {
+            metrics: [
+                { value: '2nd / 10', label: 'in our studio section' },
+                { value: '63.66%', label: "satisfaction on the coordinators' withheld-weather simulation" },
+                { value: '0.882', label: 'overall satisfaction on our own 5-year model' },
+            ],
+            narrative:
+                "On our own 5-year model the final design scored 0.882 overall satisfaction at a projected cost of about $62,000, roughly 58% of the cost of shipping water in. When the course coordinators ran every team's design through their independent simulator on withheld future weather, ours scored 63.66% and placed 2nd of 10 in our studio section. The gap between those two numbers is the lesson: a design tuned to historical weather has to hold up against conditions you can't see in advance.",
+        },
+
+        // --- Reflection ---
+        reflection:
+            "The biggest takeaway was how much unseen, drier-than-historical weather can pull down a design that looks strong on paper. On-demand flow rate was our weakest score, and reliability under drought is where the design was most exposed, so next time I'd size in more margin there rather than optimizing tightly to the historical data we had.",
+
+        // --- Media gallery (images only, no video) ---
+        // TODO(me): drop files into public/projects/rwh/ and update paths/captions below.
+        gallery: [
+            { type: 'image', src: `${import.meta.env.BASE_URL}projects/rwh/satisfaction-radar.png`, caption: 'Per-criterion satisfaction (design model)', alt: 'Radar chart of satisfaction across the eight criteria' },
+            { type: 'image', src: `${import.meta.env.BASE_URL}projects/rwh/cost-breakdown.png`, caption: '5-year cost breakdown (~$62k)', alt: 'Donut chart of 5-year system costs by category' },
+            { type: 'image', src: `${import.meta.env.BASE_URL}projects/rwh/final-recommendation.png`, caption: 'Final system specification', alt: 'Table summarizing the final recommended RWH configuration' },
+        ],
+
+        // Plain-text fallback for any older rendering path.
+        description:
+            "A first-year cornerstone project to design an off-grid rainwater harvesting system for a remote BC household, evaluated through a team-built 5-year spreadsheet simulation scored on eight weighted criteria. I owned much of the quantitative core: the topography/elevation and component-placement model, the 5-year weather and catchment simulations, the on-demand flow and pump-to-storage fluid models, and the diesel power model. The final design placed 2nd of 10 in our studio section at 63.66% satisfaction on the coordinators' withheld-weather simulation.",
     },
 };

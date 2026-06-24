@@ -1,16 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { projects } from '../data/projects.js';
 import { useFadeIn } from '../hooks/useFadeIn.js';
 
 export default function Home() {
     const [filter, setFilter] = useState('all');
+    const isFirstFilterRender = useRef(true);
 
     useFadeIn();
 
     useEffect(() => {
         document.title = 'Minh Le — Mechanical Engineering Student';
     }, []);
+
+    useEffect(() => {
+        // skip on mount so the initial scroll-triggered fade-in still plays;
+        // on later filter switches, show cards immediately instead of waiting
+        // for IntersectionObserver to catch up with the layout change
+        if (isFirstFilterRender.current) {
+            isFirstFilterRender.current = false;
+            return;
+        }
+        document.querySelectorAll('.project-card.fade-in').forEach((el) => el.classList.add('is-visible'));
+    }, [filter]);
 
     const entries = Object.entries(projects);
 

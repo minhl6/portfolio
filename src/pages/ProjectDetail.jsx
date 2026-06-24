@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { projects } from '../data/projects.js';
 import { useFadeIn } from '../hooks/useFadeIn.js';
@@ -10,6 +10,110 @@ function toEmbedUrl(video) {
     return video.includes('youtu.be')
         ? video.replace('youtu.be/', 'www.youtube.com/embed/')
         : video.replace('watch?v=', 'embed/');
+}
+
+// placeholder media paths (e.g. project TODOs not filled in yet) shouldn't
+// show a broken-image icon — just collapse the element
+function hideOnError(e) {
+    e.currentTarget.style.display = 'none';
+}
+
+function ProjectProcess({ steps }) {
+    return (
+        <ol className="project-process">
+            {steps.map((step, i) => (
+                <li className="project-process-step" key={step.phase || i}>
+                    <div className="project-process-marker" aria-hidden="true">{i + 1}</div>
+                    <div className="project-process-content">
+                        <h4>{step.phase}</h4>
+                        <p>{step.body}</p>
+                        {step.image && (
+                            <img src={step.image} alt={step.alt || step.phase} loading="lazy" onError={hideOnError} />
+                        )}
+                    </div>
+                </li>
+            ))}
+        </ol>
+    );
+}
+
+function ProjectEngineering({ items }) {
+    return (
+        <div className="project-engineering-grid">
+            {items.map((item, i) => (
+                <div className="project-engineering-card" key={item.challenge || i}>
+                    <h4>{item.challenge}</h4>
+                    <p><strong>Test:</strong> {item.test}</p>
+                    <p><strong>Outcome:</strong> {item.outcome}</p>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function ProjectResults({ results }) {
+    return (
+        <>
+            {results.metrics && (
+                <div className="project-results-metrics">
+                    {results.metrics.map((metric, i) => (
+                        <div className="project-result-stat" key={metric.label || i}>
+                            <span className="project-result-value">{metric.value}</span>
+                            <span className="project-result-label">{metric.label}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {results.narrative && <p>{results.narrative}</p>}
+        </>
+    );
+}
+
+function ProjectFinalDesign({ specs }) {
+    return (
+        <dl className="project-final-design">
+            {specs.map((spec) => (
+                <div className="project-final-design-row" key={spec.label}>
+                    <dt>{spec.label}</dt>
+                    <dd>{spec.value}</dd>
+                </div>
+            ))}
+        </dl>
+    );
+}
+
+function ProjectGallery({ items }) {
+    return (
+        <div className="project-gallery-grid">
+            {items.map((item, i) => {
+                if (item.type === 'youtube') {
+                    return (
+                        <div className="project-detail-video project-gallery-video" key={item.id || i}>
+                            <iframe
+                                src={`https://www.youtube.com/embed/${item.id}`}
+                                title={item.caption || 'Project video'}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            />
+                        </div>
+                    );
+                }
+                if (item.type === 'video') {
+                    return (
+                        <div className="project-detail-video project-gallery-video" key={item.src || i}>
+                            <video controls src={item.src} onError={hideOnError} />
+                        </div>
+                    );
+                }
+                return (
+                    <figure className="project-gallery-item" key={item.src || i}>
+                        <img src={item.src} alt={item.alt || item.caption || ''} loading="lazy" onError={hideOnError} />
+                        {item.caption && <figcaption>{item.caption}</figcaption>}
+                    </figure>
+                );
+            })}
+        </div>
+    );
 }
 
 function ProjectCarousel({ items, heading }) {
@@ -107,7 +211,6 @@ function ProjectCarousel({ items, heading }) {
 export default function ProjectDetail() {
     const { slug } = useParams();
     const project = projects[slug];
-    const [lightboxImage, setLightboxImage] = useState(null);
 
     useFadeIn([slug]);
 
@@ -117,21 +220,17 @@ export default function ProjectDetail() {
         }
     }, [project]);
 
-    useEffect(() => {
-        if (!lightboxImage) return;
-
-        const onKeyDown = (e) => {
-            if (e.key === 'Escape') setLightboxImage(null);
-        };
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
-    }, [lightboxImage]);
-
     if (!project) {
         return <Navigate to="/" replace />;
     }
 
-    const heroImage = project.hero || project.image;
+    // hero is either a plain URL string (older entries), a richer
+    // { image, alt } object, or explicitly `false` to hide the banner entirely
+    const isHeroObject = typeof project.hero === 'object' && project.hero !== null;
+    const heroImage = project.hero === false
+        ? null
+        : isHeroObject ? project.hero.image : (project.hero || project.image);
+    const heroAlt = isHeroObject ? project.hero.alt : project.title;
 
     return (
         <section className="project-detail">
@@ -150,16 +249,91 @@ export default function ProjectDetail() {
 
                 {heroImage && (
                     <div className="project-detail-image">
-                        <img src={heroImage} alt={project.title} />
+                        <img src={heroImage} alt={heroAlt} onError={hideOnError} />
                     </div>
                 )}
 
                 <div className="project-detail-body">
-                    <p className="project-summary">{project.summary}</p>
-                    {project.description && project.description.map((paragraph, i) => (
-                        <p key={i}>{paragraph}</p>
-                    ))}
+                    {project.summary && <p className="project-summary">{project.summary}</p>}
+                    {project.overview && (
+                        <>
+                            <h3>The Problem</h3>
+                            <p>{project.overview}</p>
+                        </>
+                    )}
+                    {!project.overview && project.description && (
+                        Array.isArray(project.description)
+                            ? project.description.map((paragraph, i) => <p key={i}>{paragraph}</p>)
+                            : <p>{project.description}</p>
+                    )}
                 </div>
+
+                {project.contribution && (
+                    <div className="project-detail-sections">
+                        <div className="project-section project-role">
+                            <h3>What I Did</h3>
+                            <ul className="project-role-list">
+                                {project.contribution.map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+
+                {project.process && (
+                    <div className="project-detail-sections">
+                        <div className="project-section">
+                            <h3>Design Process</h3>
+                            <ProjectProcess steps={project.process} />
+                        </div>
+                    </div>
+                )}
+
+                {project.engineering && (
+                    <div className="project-detail-sections">
+                        <div className="project-section">
+                            <h3>Engineering &amp; Testing</h3>
+                            <ProjectEngineering items={project.engineering} />
+                        </div>
+                    </div>
+                )}
+
+                {project.finalDesign && (
+                    <div className="project-detail-sections">
+                        <div className="project-section">
+                            <h3>Final Design</h3>
+                            <ProjectFinalDesign specs={project.finalDesign} />
+                        </div>
+                    </div>
+                )}
+
+                {project.results && (
+                    <div className="project-detail-sections">
+                        <div className="project-section">
+                            <h3>Results</h3>
+                            <ProjectResults results={project.results} />
+                        </div>
+                    </div>
+                )}
+
+                {project.reflection && (
+                    <div className="project-detail-sections">
+                        <div className="project-section">
+                            <h3>Reflection</h3>
+                            <p>{project.reflection}</p>
+                        </div>
+                    </div>
+                )}
+
+                {project.gallery && (
+                    <div className="project-detail-sections">
+                        <div className="project-section">
+                            <h3>Gallery</h3>
+                            <ProjectGallery items={project.gallery} />
+                        </div>
+                    </div>
+                )}
 
                 {project.sections && (
                     <div className="project-detail-sections">
@@ -226,14 +400,7 @@ export default function ProjectDetail() {
                                         <div className="project-section-gallery">
                                             {section.gallery.map(({ image, caption }) => (
                                                 <figure key={image}>
-                                                    <button
-                                                        type="button"
-                                                        className="project-section-gallery-trigger"
-                                                        onClick={() => setLightboxImage({ src: image, caption })}
-                                                        aria-label={`Expand image: ${caption || section.heading}`}
-                                                    >
-                                                        <img src={image} alt={caption || section.heading} loading="lazy" />
-                                                    </button>
+                                                    <img src={image} alt={caption || section.heading} loading="lazy" />
                                                     {caption && <figcaption>{caption}</figcaption>}
                                                 </figure>
                                             ))}
@@ -270,20 +437,6 @@ export default function ProjectDetail() {
                     </div>
                 )}
             </div>
-
-            {lightboxImage && (
-                <div className="lightbox" onClick={() => setLightboxImage(null)}>
-                    <button
-                        type="button"
-                        className="lightbox-close"
-                        onClick={() => setLightboxImage(null)}
-                        aria-label="Close expanded image"
-                    >
-                        ×
-                    </button>
-                    <img src={lightboxImage.src} alt={lightboxImage.caption || project.title} />
-                </div>
-            )}
         </section>
     );
 }
