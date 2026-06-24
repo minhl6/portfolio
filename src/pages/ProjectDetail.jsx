@@ -14,6 +14,23 @@ function toEmbedUrl(video) {
 function ProjectCarousel({ items, heading }) {
     const trackRef = useRef(null);
     const drag = useRef({ active: false, lastX: 0, lastTime: 0, velocity: 0, rafId: null });
+    const tripledItems = [...items, ...items, ...items];
+
+    useEffect(() => {
+        const track = trackRef.current;
+        track.scrollLeft = track.scrollWidth / 3;
+
+        const onScroll = () => {
+            const band = track.scrollWidth / 3;
+            if (track.scrollLeft >= band * 2) {
+                track.scrollLeft -= band;
+            } else if (track.scrollLeft < band) {
+                track.scrollLeft += band;
+            }
+        };
+        track.addEventListener('scroll', onScroll);
+        return () => track.removeEventListener('scroll', onScroll);
+    }, [items]);
 
     const stopMomentum = () => {
         if (drag.current.rafId) {
@@ -76,8 +93,8 @@ function ProjectCarousel({ items, heading }) {
             onPointerUp={endDrag}
             onPointerLeave={endDrag}
         >
-            {items.map(({ image, caption }) => (
-                <figure className="project-carousel-item" key={image}>
+            {tripledItems.map(({ image, caption }, i) => (
+                <figure className="project-carousel-item" key={`${image}-${i}`}>
                     <img src={image} alt={caption || heading} loading="lazy" draggable={false} />
                     {caption && <figcaption>{caption}</figcaption>}
                 </figure>
@@ -146,35 +163,54 @@ export default function ProjectDetail() {
                 {project.sections && (
                     <div className="project-detail-sections">
                         {project.sections.map((section, i) => {
-                            const images = (section.images || [section.image]).filter(Boolean);
+                            // a sideBySide section with no video pairs its single `image` with the
+                            // text in the row instead of the full-width images strip below
+                            const rowImage = section.sideBySide && !section.video && !section.images && section.image;
+                            const images = (section.images || (rowImage ? [] : [section.image])).filter(Boolean);
+
+                            const videoElement = section.video && (
+                                <div className={`project-detail-video ${section.loop ? 'is-zoomed' : ''}`}>
+                                    {VIDEO_HOST_PATTERN.test(section.video) ? (
+                                        <iframe
+                                            src={toEmbedUrl(section.video)}
+                                            title={section.heading || 'Project demo video'}
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        />
+                                    ) : section.loop ? (
+                                        <video
+                                            src={section.video}
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            onLoadedMetadata={(e) => { e.currentTarget.playbackRate = 2; }}
+                                        />
+                                    ) : (
+                                        <video controls src={section.video} />
+                                    )}
+                                </div>
+                            );
 
                             return (
                                 <div className="project-section" key={section.heading || i}>
                                     {section.heading && <h3>{section.heading}</h3>}
-                                    {section.text && <p>{section.text}</p>}
 
-                                    {section.video && (
-                                        <div className={`project-detail-video ${section.loop ? 'is-zoomed' : ''}`}>
-                                            {VIDEO_HOST_PATTERN.test(section.video) ? (
-                                                <iframe
-                                                    src={toEmbedUrl(section.video)}
-                                                    title={section.heading || 'Project demo video'}
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                />
-                                            ) : section.loop ? (
-                                                <video
-                                                    src={section.video}
-                                                    autoPlay
-                                                    muted
-                                                    loop
-                                                    playsInline
-                                                    onLoadedMetadata={(e) => { e.currentTarget.playbackRate = 2; }}
-                                                />
-                                            ) : (
-                                                <video controls src={section.video} />
+                                    {section.sideBySide ? (
+                                        <div className="project-section-row">
+                                            {section.text && <p>{section.text}</p>}
+                                            {videoElement}
+                                            {rowImage && (
+                                                <div className="project-section-row-media">
+                                                    <img src={rowImage} alt={section.heading || project.title} loading="lazy" />
+                                                </div>
                                             )}
                                         </div>
+                                    ) : (
+                                        <>
+                                            {section.text && <p>{section.text}</p>}
+                                            {videoElement}
+                                        </>
                                     )}
 
                                     {images.length > 0 && (
@@ -187,15 +223,15 @@ export default function ProjectDetail() {
 
                                     {section.gallery && (
                                         <div className="project-section-gallery">
-                                            {section.gallery.map(({ src, caption }) => (
-                                                <figure key={src}>
+                                            {section.gallery.map(({ image, caption }) => (
+                                                <figure key={image}>
                                                     <button
                                                         type="button"
                                                         className="project-section-gallery-trigger"
-                                                        onClick={() => setLightboxImage({ src, caption })}
+                                                        onClick={() => setLightboxImage({ src: image, caption })}
                                                         aria-label={`Expand image: ${caption || section.heading}`}
                                                     >
-                                                        <img src={src} alt={caption || section.heading} loading="lazy" />
+                                                        <img src={image} alt={caption || section.heading} loading="lazy" />
                                                     </button>
                                                     {caption && <figcaption>{caption}</figcaption>}
                                                 </figure>

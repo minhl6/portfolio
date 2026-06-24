@@ -15,7 +15,7 @@ export const projects = {
             {
                 heading: 'Demo',
                 text: 'The arm runs in three modes: live manual control, recording, and autonomous playback. The video below shows all three.',
-                video: '', // TODO: unlisted YouTube link, OR the BASE_URL-prefixed path to media/robotic-arm/demo.mp4
+                video: 'https://www.youtube.com/watch?v=MxQNZAP6aJA',
             },
             {
                 heading: 'Leader and follower control',
@@ -62,24 +62,35 @@ export const projects = {
             {
                 heading: 'Problems I solved',
                 text: "Most of what I ran into turned out to be hardware problems, not bugs in the code. Turning on all four servos at once caused a brief power dip, so I staggered their startup instead. Loose jumper wires made the potentiometer readings jump around and the arm twitch; moving everything onto a soldered custom PCB fixed it, with solid connections and a ground pour to cut electrical noise. The biggest fix was swapping every SG90 for a metal-gear MG90D. The SG90s had loose, sloppy gears, so under load the arm would twitch because the servo couldn't actually hold the angle it thought it was at.",
-                image: '', // TODO: optional build/wiring photo
+                video: `${import.meta.env.BASE_URL}media/robotic-arm/Arm_Failure.mp4`,
+                loop: true,
+                sideBySide: true,
             },
             {
-                heading: 'How it started',
-                blocks: [
+                heading: 'Evolution of the Build',
+                gallery: [
                     {
-                        caption: 'Popsicle sticks and cheap servos taped to a bottle cap.',
                         image: `${import.meta.env.BASE_URL}media/robotic-arm/Pop_proto.jpeg`,
+                        caption: 'Popsicle sticks and cheap servos taped to a bottle cap.',
                     },
                     {
-                        caption: '3D printed arm on a breadboard, before the custom PCB.',
                         image: `${import.meta.env.BASE_URL}media/robotic-arm/3D_printedArm_Early.jpeg`,
+                        caption: '3D printed arm on a breadboard, before the custom PCB.',
                     },
                 ],
             },
             {
                 heading: "What I'd Do Next",
                 text: "A few things would make good next steps. Adding a fuse would protect the electronics by cutting the power instantly if a wire ever shorted. Gravity compensation, like a counterweight or spring to help hold the arm up, would stop the motors from working so hard just to keep it steady. Running a repeatability test to measure how consistently the arm returns to the same spot would give real data on how accurate it is. The most ambitious would be force feedback, so instead of control only going one way, the arm could sense when it touches something and push back on your hand, letting you feel what it's doing. That two way control is the same idea used in surgical and industrial robots.",
+            },
+            {
+                heading: 'Other Views',
+                carousel: [
+                    { image: `${import.meta.env.BASE_URL}media/robotic-arm/extra/IMG_2196.jpeg`, caption: '' },
+                    { image: `${import.meta.env.BASE_URL}media/robotic-arm/extra/IMG_2275.jpeg`, caption: '' },
+                    { image: `${import.meta.env.BASE_URL}media/robotic-arm/extra/IMG_2281.jpeg`, caption: '' },
+                    { image: `${import.meta.env.BASE_URL}media/robotic-arm/extra/IMG_2282.jpeg`, caption: '' },
+                ],
             },
         ],
     },
