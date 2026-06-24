@@ -16,6 +16,7 @@ export const projects = {
                 heading: 'Demo',
                 text: 'The arm runs in three modes: live manual control, recording, and autonomous playback. The video below shows all three.',
                 video: 'https://www.youtube.com/watch?v=MxQNZAP6aJA',
+                speed: 2,
             },
             {
                 heading: 'Leader and follower control',

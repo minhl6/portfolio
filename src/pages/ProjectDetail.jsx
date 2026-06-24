@@ -6,10 +6,23 @@ import CodeBlock from '../components/CodeBlock.jsx';
 
 const VIDEO_HOST_PATTERN = /youtube\.com|youtu\.be|vimeo\.com/i;
 
-function toEmbedUrl(video) {
-    return video.includes('youtu.be')
+function toEmbedUrl(video, speed) {
+    const embed = video.includes('youtu.be')
         ? video.replace('youtu.be/', 'www.youtube.com/embed/')
         : video.replace('watch?v=', 'embed/');
+    if (!speed) return embed;
+    const sep = embed.includes('?') ? '&' : '?';
+    return `${embed}${sep}enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`;
+}
+
+// YouTube's iframe API accepts postMessage commands once the player has
+// loaded, so we set the rate as soon as the iframe fires `load` — that way
+// it's already in effect by the time the visitor clicks play.
+function setYoutubePlaybackRate(e, speed) {
+    e.currentTarget.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func: 'setPlaybackRate', args: [speed] }),
+        '*'
+    );
 }
 
 // placeholder media paths (e.g. project TODOs not filled in yet) shouldn't
@@ -347,10 +360,11 @@ export default function ProjectDetail() {
                                 <div className={`project-detail-video ${section.loop ? 'is-zoomed' : ''}`}>
                                     {VIDEO_HOST_PATTERN.test(section.video) ? (
                                         <iframe
-                                            src={toEmbedUrl(section.video)}
+                                            src={toEmbedUrl(section.video, section.speed)}
                                             title={section.heading || 'Project demo video'}
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
+                                            onLoad={section.speed ? (e) => setYoutubePlaybackRate(e, section.speed) : undefined}
                                         />
                                     ) : section.loop ? (
                                         <video
