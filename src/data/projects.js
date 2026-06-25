@@ -91,6 +91,7 @@ int readSmoothedPot(int joint) {
                     {
                         image: `${import.meta.env.BASE_URL}media/robotic-arm/3D_printedArm_Early.jpeg`,
                         caption: '3D printed arm on a breadboard, before the custom PCB.',
+                        objectFit: 'contain',
                     },
                 ],
             },
@@ -149,15 +150,19 @@ int readSmoothedPot(int joint) {
 
         // --- Problem ---
         overview:
-            'For our APSC 101 design project, our team designed a device to retrieve underwater debris of varying shapes and sizes. The system had to be built from limited materials (sheet metal, cardboard, and common craft items) and driven by a servo motor wired to an Arduino, with an optional sonar sensor available. It had to work both fully autonomously and under a human operator whose view of the field was blocked. Our strategy prioritized consistency and simplicity over complexity: a device that did one thing reliably rather than many things unpredictably.',
+            'For an APSC 101 design project, we built a device to retrieve underwater debris of varying shapes and sizes. We had limited materials (sheet metal, cardboard, craft items) and an Arduino-controlled servo. The device had to work both on its own and when operated by someone who couldn\'t see the field. Our strategy was to do one thing reliably instead of many things unpredictably.',
+        overviewVideo: {
+            src: `${import.meta.env.BASE_URL}projects/chompy/demo_vid.mov`,
+            loop: true,
+            speed: 1.5,
+        },
 
         // --- What I did (clear individual ownership on a team project) ---
         contribution: [
-            "Wrote the Arduino/servo control code that drove the claw's open/close cycle.",
-            'Tested the sonar sensor and found it unreliable: it detected non-target objects, struggled to hold an unblocked signal, and added significant code complexity. I flagged it as a strategic risk and replaced it with a timer-based control scheme so the claw operated predictably during competition.',
-            'Produced the 3D models and orthographic assembly drawings of the final design.',
-            'Did sheet-metal fabrication on the claw body and ran jamming tests that exposed a key flaw in an early design.',
-            'Built one of the early prototypes that, while not selected for the final, helped the team narrow the design direction.',
+            "Wrote the Arduino/servo code for the claw's open/close cycle.",
+            'Tested the optional sonar sensor, found it unreliable, and swapped it for a timer-based approach that ran predictably.',
+            'Built the 3D models and orthographic drawings.',
+            'Fabricated the sheet-metal claw and ran jamming tests that caught an early design flaw.',
         ],
 
         // --- Design process (the narrative arc) ---
@@ -172,29 +177,35 @@ int readSmoothedPot(int joint) {
             {
                 phase: 'Physical prototyping',
                 body: 'Built and compared three claw types (a four-arm claw, a three-prong claw, and a scoop claw) to test how each handled objects of different sizes.',
-                // TODO(me): drop the three prototypes photo at public/projects/chompy/process-prototypes.jpg
-                image: `${import.meta.env.BASE_URL}projects/chompy/process-prototypes.jpg`,
+                images: [
+                    `${import.meta.env.BASE_URL}projects/chompy/proto-1.png`,
+                    `${import.meta.env.BASE_URL}projects/chompy/proto-2.png`,
+                    `${import.meta.env.BASE_URL}projects/chompy/proto-3.png`,
+                ],
                 alt: 'Three sheet-metal claw prototypes side by side',
             },
             {
                 phase: 'Targeted testing',
                 body: 'Ran focused tests against our biggest technical risks: structural deformation, object jamming, and sonar reliability.',
-                // TODO(me): drop a testing photo at public/projects/chompy/process-testing.jpg
-                image: `${import.meta.env.BASE_URL}projects/chompy/process-testing.jpg`,
                 alt: 'Load and jamming testing of the claw',
             },
             {
                 phase: 'Design decision',
-                body: 'Scored the shortlisted designs (Chompy, Tetris, 4 Arms) against weighted criteria: pickup versatility, capacity, strength, complexity, size, and material use. Chompy won at 6.9 as the best all-round "grab-all."',
-                // TODO(me): drop the weighted-comparison chart at public/projects/chompy/process-decision.jpg
-                image: `${import.meta.env.BASE_URL}projects/chompy/process-decision.jpg`,
+                body: 'Ranked our three final designs (Chompy, Tetris, 4 Arms) on weighted criteria covering pickup versatility, capacity, strength, complexity, size, and material use. Chompy came out on top at 6.9, winning as the most versatile design.',
+                images: [
+                    { src: `${import.meta.env.BASE_URL}projects/chompy/design-1.png`, fit: 'contain', aspectRatio: '458/424', clipPath: 'inset(5% 0 0 0 round 10px)', maxWidth: '260px' },
+                    { src: `${import.meta.env.BASE_URL}projects/chompy/design-2.png`, fit: 'cover', aspectRatio: '458/424', clipPath: 'inset(5% 0 0 0 round 10px)', maxWidth: '260px' },
+                ],
                 alt: 'Weighted scoring chart comparing the three final designs',
             },
             {
                 phase: 'Final design',
                 body: 'Chompy: two smooth circular scoops with a suspended platform above for the Arduino and electronics, documented with 3-view orthographic and isometric drawings.',
-                // TODO(me): drop the orthographic / isometric drawing at public/projects/chompy/process-final-drawing.jpg
-                image: `${import.meta.env.BASE_URL}projects/chompy/process-final-drawing.jpg`,
+                images: [
+                    { src: `${import.meta.env.BASE_URL}projects/chompy/final-1.png`, height: '220px' },
+                    { src: `${import.meta.env.BASE_URL}projects/chompy/final-2.png`, height: '220px' },
+                    { src: `${import.meta.env.BASE_URL}projects/chompy/final-3.png`, height: '220px' },
+                ],
                 alt: 'Orthographic and isometric assembly drawings of the final claw',
             },
         ],
@@ -204,17 +215,21 @@ int readSmoothedPot(int joint) {
             {
                 challenge: 'Deformation under load',
                 test: 'Suspended the heaviest competition object from a bent metal sample for 20 seconds.',
-                outcome: 'Samples bent only 0.5-1 mm, with no significant plastic deformation expected in competition.',
+                outcome: 'Bent only 0.5-1 mm, no significant deformation.',
+                image: `${import.meta.env.BASE_URL}projects/chompy/test-1.png`,
+                imageCropTop: '39%',
             },
             {
                 challenge: 'Objects jamming in the claw',
-                test: 'Our first two-prong sheet-metal claw: objects caught and wedged in the bent creases, causing inconsistent releases.',
-                outcome: 'Redesigned to a smooth, bend-free scoop so objects release cleanly every time.',
+                test: 'Our first two-prong claw wedged objects in the bent creases, causing inconsistent releases.',
+                outcome: 'Redesigned to a smooth, bend-free scoop that releases cleanly.',
+                image: `${import.meta.env.BASE_URL}projects/chompy/test-2.png`,
             },
             {
                 challenge: 'Sonar reliability',
-                test: 'Ran distance and code tests with the sonar sensor.',
-                outcome: 'Sonar detected non-target objects and needed an unobstructed signal, so I replaced it with simpler, more reliable timer-based control.',
+                test: 'Ran distance and code tests on the sonar sensor.',
+                outcome: 'It detected non-target objects and needed an unobstructed signal, so I replaced it with simpler, more reliable timer-based control.',
+                image: `${import.meta.env.BASE_URL}projects/chompy/test-3.png`,
             },
         ],
 
@@ -236,8 +251,9 @@ int readSmoothedPot(int joint) {
         // --- Media gallery (photos + videos) ---
         // TODO(me): drop files into public/projects/chompy/ and update paths/captions below.
         gallery: [
-            { type: 'image', src: `${import.meta.env.BASE_URL}projects/chompy/action-blocks-round.jpg`, caption: 'Blocks round', alt: 'Chompy scooping small blocks' },
-            { type: 'image', src: `${import.meta.env.BASE_URL}projects/chompy/action-team-round.jpg`, caption: 'Team round', alt: 'Chompy carrying a large object in the team round' },
+            { type: 'video', src: `${import.meta.env.BASE_URL}projects/chompy/clip-1.mov`, loop: true, speed: 2 },
+            { type: 'video', src: `${import.meta.env.BASE_URL}projects/chompy/clip-2.mov`, loop: true, speed: 2 },
+            { type: 'video', src: `${import.meta.env.BASE_URL}projects/chompy/clip-3.mov`, loop: true, speed: 2 },
             // Videos: host on YouTube (unlisted is fine) and use type: "youtube", or
             // drop a short compressed clip at public/projects/chompy/demo.mp4 and use type: "video".
             // { type: 'video', src: `${import.meta.env.BASE_URL}projects/chompy/demo.mp4`, caption: 'Chompy in action' },

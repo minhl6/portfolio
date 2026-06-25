@@ -40,7 +40,22 @@ function ProjectProcess({ steps }) {
                     <div className="project-process-content">
                         <h4>{step.phase}</h4>
                         <p>{step.body}</p>
-                        {step.image && (
+                        {step.images ? (
+                            <div className="project-process-images">
+                                {step.images.map((item, j) => {
+                                    const src = typeof item === 'string' ? item : item.src;
+                                    const fit = typeof item === 'object' && item.fit ? item.fit : undefined;
+                                    const ar = typeof item === 'object' && item.aspectRatio ? item.aspectRatio : undefined;
+                                    const mw = typeof item === 'object' && item.maxWidth ? item.maxWidth : undefined;
+                                    const cp = typeof item === 'object' && item.clipPath ? item.clipPath : undefined;
+                                    const h = typeof item === 'object' && item.height ? item.height : undefined;
+                                    const style = (fit || ar || mw || cp || h) ? { objectFit: h && !fit ? 'fill' : fit, aspectRatio: h && !ar ? 'auto' : ar, maxWidth: mw, clipPath: cp, height: h, width: h ? 'auto' : undefined, flex: (mw || h) ? 'none' : undefined } : undefined;
+                                    return (
+                                        <img key={j} src={src} alt={step.alt || step.phase} loading="lazy" onError={hideOnError} style={style} />
+                                    );
+                                })}
+                            </div>
+                        ) : step.image && (
                             <img src={step.image} alt={step.alt || step.phase} loading="lazy" onError={hideOnError} />
                         )}
                     </div>
@@ -58,6 +73,16 @@ function ProjectEngineering({ items }) {
                     <h4>{item.challenge}</h4>
                     <p><strong>Test:</strong> {item.test}</p>
                     <p><strong>Outcome:</strong> {item.outcome}</p>
+                    {item.image && (
+                        item.imageCropTop ? (
+                            <div className="project-engineering-card-img-wrap">
+                                <img src={item.image} alt={item.challenge} loading="lazy" onError={hideOnError}
+                                    style={{ marginTop: `-${item.imageCropTop}` }} />
+                            </div>
+                        ) : (
+                            <img src={item.image} alt={item.challenge} loading="lazy" onError={hideOnError} className="project-engineering-card-img" />
+                        )
+                    )}
                 </div>
             ))}
         </div>
@@ -108,6 +133,14 @@ function ProjectGallery({ items }) {
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                             />
+                        </div>
+                    );
+                }
+                if (item.type === 'video' && item.loop) {
+                    return (
+                        <div className="project-detail-video project-gallery-video-loop" key={item.src || i}>
+                            <video src={item.src} autoPlay muted loop playsInline preload="metadata" onError={hideOnError}
+                                onLoadedMetadata={(e) => { e.currentTarget.playbackRate = item.speed ?? 2; }} />
                         </div>
                     );
                 }
@@ -272,6 +305,18 @@ export default function ProjectDetail() {
                         <>
                             <h3>The Problem</h3>
                             <p>{project.overview}</p>
+                            {project.overviewVideo && (
+                                <div className="project-detail-video is-zoomed">
+                                    <video
+                                        src={project.overviewVideo.src}
+                                        autoPlay
+                                        muted
+                                        loop
+                                        playsInline
+                                        onLoadedMetadata={(e) => { e.currentTarget.playbackRate = project.overviewVideo.speed ?? 1; }}
+                                    />
+                                </div>
+                            )}
                         </>
                     )}
                     {!project.overview && project.description && (
@@ -373,7 +418,7 @@ export default function ProjectDetail() {
                                             muted
                                             loop
                                             playsInline
-                                            onLoadedMetadata={(e) => { e.currentTarget.playbackRate = 2; }}
+                                            onLoadedMetadata={(e) => { e.currentTarget.playbackRate = section.speed ?? 2; }}
                                         />
                                     ) : (
                                         <video controls src={section.video} />
@@ -412,9 +457,10 @@ export default function ProjectDetail() {
 
                                     {section.gallery && (
                                         <div className="project-section-gallery">
-                                            {section.gallery.map(({ image, caption }) => (
+                                            {section.gallery.map(({ image, caption, objectFit }) => (
                                                 <figure key={image}>
-                                                    <img src={image} alt={caption || section.heading} loading="lazy" />
+                                                    <img src={image} alt={caption || section.heading} loading="lazy"
+                                                        style={objectFit ? { objectFit } : undefined} />
                                                     {caption && <figcaption>{caption}</figcaption>}
                                                 </figure>
                                             ))}
