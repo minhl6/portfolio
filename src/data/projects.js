@@ -101,7 +101,7 @@ int readSmoothedPot(int joint) {
                     "Add a fuse to cut power instantly if a wire shorts.",
                     "Add gravity compensation so the motors aren't fighting to hold the arm up.",
                     "Run a repeatability test to measure how consistently it returns to the same spot.",
-                    "Force feedback is the one I'd most want to build next. The arm would push back when it touches something, so you could actually feel what it's gripping, the same two-way control used in surgical and industrial robots.",
+                    "Force feedback would also be interesting. The arm would push back when it touches something, so you could actually feel what it's gripping, the same two-way control used in surgical and industrial robots.",
                 ],
             },
             {
