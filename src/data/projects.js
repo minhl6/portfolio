@@ -76,7 +76,7 @@ int readSmoothedPot(int joint) {
             },
             {
                 heading: 'Problems I solved',
-                text: "Most of what I ran into turned out to be hardware problems, not bugs in the code. Turning on all four servos at once caused a brief power dip, so I staggered their startup instead. Loose jumper wires made the potentiometer readings jump around and the arm twitch; moving everything onto a soldered custom PCB fixed it, with solid connections and a ground pour to cut electrical noise. The biggest fix was swapping every SG90 for a metal-gear MG90D. The SG90s had loose, sloppy gears, so under load the arm would twitch because the servo couldn't actually hold the angle it thought it was at.",
+                text: "Most of these were hardware problems, not code bugs. Powering all four servos at once caused a brief voltage dip, so I staggered their startup. Loose jumper wires made the readings jump and the arm twitch, which a soldered custom PCB fixed with solid connections and a ground pour to cut noise. The biggest fix was swapping every SG90 for a metal-gear MG90D, since the cheap servos had sloppy gears that couldn't hold their angle under load.",
                 video: `${import.meta.env.BASE_URL}media/robotic-arm/Arm_Failure.mp4`,
                 loop: true,
                 sideBySide: true,
@@ -97,7 +97,12 @@ int readSmoothedPot(int joint) {
             },
             {
                 heading: "What I'd Do Next",
-                text: "A few things would make good next steps. Adding a fuse would protect the electronics by cutting the power instantly if a wire ever shorted. Gravity compensation, like a counterweight or spring to help hold the arm up, would stop the motors from working so hard just to keep it steady. Running a repeatability test to measure how consistently the arm returns to the same spot would give real data on how accurate it is. The most ambitious would be force feedback, so instead of control only going one way, the arm could sense when it touches something and push back on your hand, letting you feel what it's doing. That two way control is the same idea used in surgical and industrial robots.",
+                text: [
+                    "Add a fuse to cut power instantly if a wire shorts.",
+                    "Add gravity compensation so the motors aren't fighting to hold the arm up.",
+                    "Run a repeatability test to measure how consistently it returns to the same spot.",
+                    "The most ambitious is force feedback, where the arm senses contact and pushes back on your hand — the same two-way control used in surgical and industrial robots.",
+                ],
             },
             {
                 heading: 'Other Views',
@@ -295,7 +300,7 @@ int readSmoothedPot(int joint) {
 
         // --- Problem ---
         overview:
-            "Module 7, our first-year cornerstone project, asked teams to design an off-grid rainwater harvesting system supplying drinking water (and its own power) to a remote two-person household in Van Anda, BC. Instead of building hardware, we modeled five years of operation in a spreadsheet simulation, scored by the course's simulator across eight weighted priorities: consumption, cost, health and environmental risk, emissions, maintenance, non-potable supply, flow rate, and reliability.",
+            "Module 7, our first-year cornerstone project, asked teams to design an off-grid rainwater harvesting system supplying drinking water and its own power to a remote two-person household in Van Anda, BC. Instead of building hardware, we modeled five years of operation in a spreadsheet simulation, scored across eight weighted priorities covering cost, reliability, health, and environmental impact.",
 
         // --- What I did (clear individual ownership on a team project) ---
         contribution: [
@@ -303,7 +308,7 @@ int readSmoothedPot(int joint) {
             'Modeled five years of weather from multi-station historical rainfall, including drier years to stress-test against climate variability.',
             'Built the 5-year catchment simulation: a daily water balance of collection vs. demand that tracked reliability against the 200-day requirement.',
             'Modeled on-demand flow to the house, solving iteratively for flow rate from pipe friction, fitting losses, elevation, and filter resistance.',
-            "Modeled pump-to-storage by matching the pump's pressure and efficiency curves to the height and losses it had to overcome, to find the daily operating point and refill energy.",
+            "Modeled pump-to-storage by matching the pump's pressure and efficiency curves to the height and losses it had to overcome.",
             'Debugged and error-checked across nearly all sheets of the shared 17-sheet workbook.',
         ],
 

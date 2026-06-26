@@ -461,7 +461,9 @@ export default function ProjectDetail() {
 
                                     {section.sideBySide ? (
                                         <div className="project-section-row">
-                                            {section.text && <p>{section.text}</p>}
+                                            {section.text && (Array.isArray(section.text)
+                                                ? <ul>{section.text.map((item, j) => <li key={j}>{item}</li>)}</ul>
+                                                : <p>{section.text}</p>)}
                                             {videoElement}
                                             {rowImage && (
                                                 <div className="project-section-row-media">
@@ -471,7 +473,9 @@ export default function ProjectDetail() {
                                         </div>
                                     ) : (
                                         <>
-                                            {section.text && <p>{section.text}</p>}
+                                            {section.text && (Array.isArray(section.text)
+                                                ? <ul>{section.text.map((item, j) => <li key={j}>{item}</li>)}</ul>
+                                                : <p>{section.text}</p>)}
                                             {videoElement}
                                         </>
                                     )}
