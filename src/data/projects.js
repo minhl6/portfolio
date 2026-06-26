@@ -101,7 +101,7 @@ int readSmoothedPot(int joint) {
                     "Add a fuse to cut power instantly if a wire shorts.",
                     "Add gravity compensation so the motors aren't fighting to hold the arm up.",
                     "Run a repeatability test to measure how consistently it returns to the same spot.",
-                    "The most ambitious is force feedback, where the arm senses contact and pushes back on your hand — the same two-way control used in surgical and industrial robots.",
+                    "The most ambitious is force feedback, where the arm feels contact and pushes back on your hand. It's the same two-way control used in surgical and industrial robots.",
                 ],
             },
             {
