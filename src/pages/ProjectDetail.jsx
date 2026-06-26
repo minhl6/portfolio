@@ -281,6 +281,21 @@ export default function ProjectDetail() {
         : isHeroObject ? project.hero.image : (project.hero || project.image);
     const heroAlt = isHeroObject ? project.hero.alt : project.title;
 
+    if (project.underConstruction) {
+        return (
+            <section className="project-detail">
+                <div className="container fade-in">
+                    <Link to="/#projects" className="back-link">← Back to projects</Link>
+                    <div style={{ textAlign: 'center', padding: '6rem 0' }}>
+                        <strong style={{ fontSize: '2rem', lineHeight: 1.3 }}>
+                            This page is currently under construction. Come back later to learn more.
+                        </strong>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="project-detail">
             <div className="container fade-in">

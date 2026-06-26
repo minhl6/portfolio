@@ -118,15 +118,10 @@ int readSmoothedPot(int joint) {
     'axial-flux-generator': {
         title: 'Axial Flux Generator',
         category: 'personal',
-        tagline: 'Parametric acrylic enclosure for an electronics project',
-        image: 'https://picsum.photos/seed/laser-cut-enclosure/1200/800',
-        tools: ['Fusion 360', 'Laser Cutting', 'Acrylic'],
-        summary: 'A snap-fit enclosure generated from parametric sketches, designed for quick iteration on a laser cutter.',
-        description: [
-            'Describe the enclosure requirements: what it needed to house, tolerances, and assembly method (finger joints, snap-fit, fasteners).',
-            'Explain your parametric design approach and how it sped up iteration between cutting tests.',
-            'Note any lessons learned about kerf compensation, material choice, or fit tolerances.',
-        ],
+        tagline: 'A hand crank that powers different devices by switching gears to match each one\'s voltage',
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/card.png`,
+        tools: [],
+        underConstruction: true,
     },
     chompy: {
         // --- card / routing basics (match existing field names) ---

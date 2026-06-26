@@ -34,12 +34,10 @@ export default function Home() {
                         <p className="hero-eyebrow">Hi, I&apos;m</p>
                         <h1>Minh Le</h1>
                         <p className="hero-subtitle">
-                            a Mechanical Engineering student designing, building, and testing things that move.
+                            a second-year mechanical engineering student at UBC
                         </p>
                         <p className="hero-description">
-                            Currently in my second year, working toward joining a UBC design team and looking for an
-                            engineering internship. I like turning ideas into CAD models, then into parts you can
-                            actually hold.
+                            I like learning how something works and then building it for real, taking an idea from a CAD model to a part or system I can physically see. I'm working toward joining a design team and finding an engineering internship.
                         </p>
                         <div className="hero-actions">
                             <a href="#projects" className="btn btn-primary">View Projects</a>
@@ -65,18 +63,15 @@ export default function Home() {
                     <h2 className="section-heading fade-in">About</h2>
                     <div className="about-grid fade-in">
                         <p className="about-text">
-                            Replace this paragraph with your own story: where you&apos;re studying, what got you
-                            interested in mechanical engineering, and what kind of problems you like working on (e.g.
-                            mechanisms, robotics, manufacturing, vehicle dynamics). Keep it to a few sentences — this
-                            is the elevator-pitch version of you.
+                            Most of what I know in CAD, electronics, and fabrication came from building projects on my own time and sticking with them until they worked. I like to understand a problem fully before building, and there&apos;s nothing better than seeing a careful plan come together in the real thing. Everything below is a project I took from an idea to a finished build.
                         </p>
                         <ul className="skills-list">
-                            <li>SolidWorks / Fusion 360</li>
-                            <li>ANSYS &amp; FEA</li>
-                            <li>3D Printing &amp; Laser Cutting</li>
-                            <li>Arduino / Embedded Basics</li>
-                            <li>Manufacturing &amp; Machining</li>
-                            <li>Technical Drawing (GD&amp;T)</li>
+                            <li>SolidWorks</li>
+                            <li>PCB Design (KiCad)</li>
+                            <li>Arduino / Embedded C++</li>
+                            <li>3D Printing</li>
+                            <li>Machining &amp; Fabrication</li>
+                            <li>Technical Drawing</li>
                         </ul>
                     </div>
                 </div>
