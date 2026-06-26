@@ -277,10 +277,11 @@ int readSmoothedPot(int joint) {
             'Data analysis',
         ],
 
-        // Card thumbnail (home grid) + big image at the top of the detail page.
+        // Card thumbnail (home grid). Hero hidden; image shown between Problem and What I Did instead.
         image: `${import.meta.env.BASE_URL}projects/rwh/card.png`,
-        hero: {
-            image: `${import.meta.env.BASE_URL}projects/rwh/card.png`,
+        hero: false,
+        overviewImage: {
+            src: `${import.meta.env.BASE_URL}projects/rwh/card.png`,
             alt: 'Diagram of a rainwater harvesting system: catchment, pump, treatment, storage, and supply to a house',
         },
 
@@ -294,17 +295,16 @@ int readSmoothedPot(int joint) {
 
         // --- Problem ---
         overview:
-            "Module 7 was the first-year cornerstone project: design a rainwater harvesting (RWH) system to supply safe drinking water to an off-grid, two-person household in Van Anda, a remote community on Texada Island, BC. Because the home has no grid power, the system also had to generate its own electricity. Rather than build hardware, each team built a spreadsheet simulation of five years of operation, and every design was scored by the course's independent simulator across eight weighted stakeholder priorities: consumption, cost, health and environmental risk, greenhouse-gas emissions, maintenance, non-potable supply, on-demand flow rate, and reliability.",
+            "Module 7, our first-year cornerstone project, asked teams to design an off-grid rainwater harvesting system supplying drinking water (and its own power) to a remote two-person household in Van Anda, BC. Instead of building hardware, we modeled five years of operation in a spreadsheet simulation, scored by the course's simulator across eight weighted priorities: consumption, cost, health and environmental risk, emissions, maintenance, non-potable supply, flow rate, and reliability.",
 
         // --- What I did (clear individual ownership on a team project) ---
         contribution: [
-            "Built the topography model: computed pipe length as a 3-D distance and elevation head from the site's contour map, and made grid-based maps for placing the storage tank and additional catchment within the site's keep-out constraints.",
-            'Modeled five years of weather by assembling multi-station historical rainfall into a daily series, including drier years to stress-test the design against climate variability.',
-            'Built the 5-year catchment simulation: a daily water balance of collection vs. household demand that tracked reliability, how many days the system met full demand, and whether it cleared the 200-day requirement.',
-            'Modeled the on-demand flow to the house, solving iteratively for flow rate given pipe friction, fitting losses, elevation, and filter resistance, capped by the UV unit\'s maximum treatable flow.',
-            'Modeled pump-to-storage by matching the pump\'s pressure and efficiency curves to the system head, finding the daily operating point and the energy needed to refill the tank.',
-            'Built the diesel power model: pumping energy plus the 24/7 UV load, converted to diesel use through generator and battery efficiencies, which became the baseline the team compared against solar.',
-            'Debugged, corrected, and error-checked across nearly all sheets of the shared 17-sheet workbook.',
+            "Built the topography model: used the site's contour map to work out pipe lengths and elevation differences, plus grid maps for placing the storage tank and catchment within the allowed zones.",
+            'Modeled five years of weather from multi-station historical rainfall, including drier years to stress-test against climate variability.',
+            'Built the 5-year catchment simulation: a daily water balance of collection vs. demand that tracked reliability against the 200-day requirement.',
+            'Modeled on-demand flow to the house, solving iteratively for flow rate from pipe friction, fitting losses, elevation, and filter resistance.',
+            "Modeled pump-to-storage by matching the pump's pressure and efficiency curves to the height and losses it had to overcome, to find the daily operating point and refill energy.",
+            'Debugged and error-checked across nearly all sheets of the shared 17-sheet workbook.',
         ],
 
         // --- Design process (the analysis arc) ---
@@ -312,8 +312,8 @@ int readSmoothedPot(int joint) {
             {
                 phase: 'Stakeholder priorities → weights',
                 body: 'Turned Van Anda stakeholder needs (reliable water, low long-term cost, low maintenance) into the eight weighted satisfaction criteria the design would be judged on.',
-                // TODO(me): drop the satisfaction-weights pie chart at public/projects/rwh/process-weights.png
                 image: `${import.meta.env.BASE_URL}projects/rwh/process-weights.png`,
+                imageBelow: `${import.meta.env.BASE_URL}projects/rwh/satis-chart.png`,
                 alt: 'Pie chart of the eight weighted satisfaction criteria',
             },
             {
@@ -332,10 +332,9 @@ int readSmoothedPot(int joint) {
             },
             {
                 phase: 'Final design & verification',
-                body: 'Locked in the highest-scoring configuration and verified it against the full 5-year simulation and required checks, including reliability and on-demand flow.',
-                // TODO(me): drop the topography placement map (storage + extra catchment) at public/projects/rwh/process-placement.png
-                image: `${import.meta.env.BASE_URL}projects/rwh/process-placement.png`,
-                alt: 'Topography map showing chosen storage tank and additional catchment locations',
+                body: 'Settled on the best-scoring setup and ran it through the full 5-year simulation to confirm it met every project requirement, including reliability and on-demand flow.',
+                image: `${import.meta.env.BASE_URL}projects/rwh/summary.png`,
+                alt: 'Summary of the final rainwater harvesting system design',
             },
         ],
 
@@ -343,27 +342,36 @@ int readSmoothedPot(int joint) {
         engineering: [
             {
                 challenge: 'Solar vs. diesel power',
-                test: 'Compared a full diesel-generator energy model against a solar-panel system on total satisfaction.',
-                outcome: 'Solar scored higher (≈0.88 vs ≈0.73) on cost, emissions, health, and maintenance, so the team chose 12 solar panels with 5 batteries.',
+                test: 'Compared a full diesel model against solar.',
+                outcome: 'Solar scored higher (~0.88 vs ~0.73) on cost, emissions, health, and maintenance. Chose 12 panels + 5 batteries.',
             },
             {
                 challenge: 'Where to place storage & catchment',
-                test: 'Used the contour map to trade off elevation (which improves on-demand flow) against pipe length and pumping energy.',
-                outcome: 'Placed the storage tank at a close, elevated point and added 325 m² of catchment, balancing flow, pressure losses, and piping cost.',
+                test: 'Used the contour map to weigh elevation against pipe length and pumping energy.',
+                outcome: 'Storage placed close and elevated, with 325 m² of added catchment.',
             },
             {
                 challenge: 'Catchment tank size',
-                test: 'Compared collection-tank volumes on overall satisfaction.',
-                outcome: 'A 2,500 L tank scored best; larger tanks added cost and maintenance without enough capture gain.',
+                test: 'Compared collection-tank volumes on satisfaction.',
+                outcome: '2,500 L scored best; bigger tanks cost more without enough gain.',
             },
             {
-                challenge: 'Ozone vs. chlorine disinfection',
-                test: 'Compared both chemical-treatment methods on health/environmental risk and cost.',
-                outcome: "Ozone scored higher and avoided chlorine's handling risk and the broken, costly existing chlorine setup.",
+                challenge: 'Ozone vs. chlorine',
+                test: 'Compared both on health/environmental risk and cost.',
+                outcome: 'Ozone won, since it cut handling risk and maintenance.',
             },
+        ],
+        engineeringImages: [
+            { src: `${import.meta.env.BASE_URL}projects/rwh/eng-1.png`, alt: 'Energy source comparison chart', cropTopMargin: '25%' },
+            { src: `${import.meta.env.BASE_URL}projects/rwh/eng-2.png`, alt: 'Contour map showing catchment and storage placement' },
         ],
 
         // --- Final design summary (optional spec list) ---
+        finalDesignTitle: 'Final Design and Projected Satisfaction/Costs',
+        finalDesignImages: [
+            { src: `${import.meta.env.BASE_URL}projects/rwh/projected-satis.png`, alt: 'Projected satisfaction breakdown' },
+            { src: `${import.meta.env.BASE_URL}projects/rwh/projected-costs.png`, alt: 'Projected costs breakdown' },
+        ],
         finalDesign: [
             { label: 'Catchment', value: 'Full roof + 325 m² additional (425 m² total)' },
             { label: 'Catchment tank', value: '2,500 L' },
@@ -381,21 +389,11 @@ int readSmoothedPot(int joint) {
                 { value: '63.66%', label: "satisfaction on the coordinators' withheld-weather simulation" },
                 { value: '0.882', label: 'overall satisfaction on our own 5-year model' },
             ],
-            narrative:
-                "On our own 5-year model the final design scored 0.882 overall satisfaction at a projected cost of about $62,000, roughly 58% of the cost of shipping water in. When the course coordinators ran every team's design through their independent simulator on withheld future weather, ours scored 63.66% and placed 2nd of 10 in our studio section. The gap between those two numbers is the lesson: a design tuned to historical weather has to hold up against conditions you can't see in advance.",
         },
 
         // --- Reflection ---
         reflection:
-            "The biggest takeaway was how much unseen, drier-than-historical weather can pull down a design that looks strong on paper. On-demand flow rate was our weakest score, and reliability under drought is where the design was most exposed, so next time I'd size in more margin there rather than optimizing tightly to the historical data we had.",
-
-        // --- Media gallery (images only, no video) ---
-        // TODO(me): drop files into public/projects/rwh/ and update paths/captions below.
-        gallery: [
-            { type: 'image', src: `${import.meta.env.BASE_URL}projects/rwh/satisfaction-radar.png`, caption: 'Per-criterion satisfaction (design model)', alt: 'Radar chart of satisfaction across the eight criteria' },
-            { type: 'image', src: `${import.meta.env.BASE_URL}projects/rwh/cost-breakdown.png`, caption: '5-year cost breakdown (~$62k)', alt: 'Donut chart of 5-year system costs by category' },
-            { type: 'image', src: `${import.meta.env.BASE_URL}projects/rwh/final-recommendation.png`, caption: 'Final system specification', alt: 'Table summarizing the final recommended RWH configuration' },
-        ],
+            "My biggest takeaway was how hard unseen dry weather hit a design that looked solid on paper. On-demand flow was our weak point, and it suffered most in drought, so I'd give it more margin next time instead of tuning so closely to the weather data we had.",
 
         // Plain-text fallback for any older rendering path.
         description:

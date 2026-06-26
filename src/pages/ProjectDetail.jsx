@@ -56,7 +56,10 @@ function ProjectProcess({ steps }) {
                                 })}
                             </div>
                         ) : step.image && (
-                            <img src={step.image} alt={step.alt || step.phase} loading="lazy" onError={hideOnError} />
+                            <>
+                                <img src={step.image} alt={step.alt || step.phase} loading="lazy" onError={hideOnError} style={step.imageMaxWidth ? { maxWidth: step.imageMaxWidth } : undefined} />
+                                {step.imageBelow && <img src={step.imageBelow} alt={step.alt || step.phase} loading="lazy" onError={hideOnError} style={{ display: 'block', margin: '0 auto', maxWidth: step.imageBelowMaxWidth || '60%' }} />}
+                            </>
                         )}
                     </div>
                 </li>
@@ -326,6 +329,12 @@ export default function ProjectDetail() {
                     )}
                 </div>
 
+                {project.overviewImage && (
+                    <div className="project-detail-image">
+                        <img src={project.overviewImage.src} alt={project.overviewImage.alt} onError={hideOnError} />
+                    </div>
+                )}
+
                 {project.contribution && (
                     <div className="project-detail-sections">
                         <div className="project-section project-role">
@@ -353,6 +362,19 @@ export default function ProjectDetail() {
                         <div className="project-section">
                             <h3>Engineering &amp; Testing</h3>
                             <ProjectEngineering items={project.engineering} />
+                            {project.engineeringImages && (
+                                <div className="project-engineering-images">
+                                    {project.engineeringImages.map((img, i) => (
+                                        img.cropTopMargin ? (
+                                            <div key={i} className="project-engineering-img-crop">
+                                                <img src={img.src} alt={img.alt} loading="lazy" onError={hideOnError} style={{ marginTop: `-${img.cropTopMargin}` }} />
+                                            </div>
+                                        ) : (
+                                            <img key={i} src={img.src} alt={img.alt} loading="lazy" onError={hideOnError} />
+                                        )
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -360,8 +382,15 @@ export default function ProjectDetail() {
                 {project.finalDesign && (
                     <div className="project-detail-sections">
                         <div className="project-section">
-                            <h3>Final Design</h3>
+                            <h3>{project.finalDesignTitle || 'Final Design'}</h3>
                             <ProjectFinalDesign specs={project.finalDesign} />
+                            {project.finalDesignImages && (
+                                <div className="project-final-design-images">
+                                    {project.finalDesignImages.map((img, i) => (
+                                        <img key={i} src={img.src} alt={img.alt} loading="lazy" onError={hideOnError} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

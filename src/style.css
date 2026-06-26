@@ -727,6 +727,7 @@ section { padding: 4.5rem 0; }
     max-width: 100%;
 }
 
+
 .project-process-images {
     display: flex;
     gap: 0.75rem;
@@ -787,6 +788,47 @@ section { padding: 4.5rem 0; }
 .project-engineering-card-img-wrap img {
     display: block;
     width: 100%;
+}
+
+.project-engineering-images {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.project-engineering-images > img {
+    width: 30%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.project-engineering-img-crop {
+    width: 30%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.project-engineering-img-crop img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.project-final-design-images {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.project-final-design-images img {
+    height: 280px;
+    width: auto;
+    border-radius: 10px;
 }
 
 .project-final-design {
