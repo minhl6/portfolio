@@ -41,7 +41,7 @@ export default function Home() {
                         </p>
                         <div className="hero-actions">
                             <a href="#projects" className="btn btn-primary">View Projects</a>
-                            <a href={`${import.meta.env.BASE_URL}resume.pdf`} className="btn btn-secondary">Resume</a>
+                            <Link to="/resume" className="btn btn-secondary">Resume</Link>
                             <a href="https://www.linkedin.com/in/minh-le-26b0103b1/" target="_blank" rel="noopener" className="btn btn-secondary">
                                 LinkedIn
                             </a>

@@ -32,7 +32,7 @@ export default function Header() {
                 <nav className={`site-nav ${isOpen ? 'is-open' : ''}`}>
                     <a href={`${base}#about`} onClick={closeNav}>About</a>
                     <a href={`${base}#projects`} onClick={closeNav}>Projects</a>
-                    <a href={`${base}resume.pdf`} onClick={closeNav}>Resume</a>
+                    <Link to="/resume" onClick={closeNav}>Resume</Link>
                     <a href={`${base}#contact`} onClick={closeNav}>Contact</a>
                     <div className="nav-social">
                         <a href="https://www.linkedin.com/in/minh-le-26b0103b1/" target="_blank" rel="noopener" aria-label="LinkedIn">
