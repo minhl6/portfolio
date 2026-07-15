@@ -3,7 +3,7 @@ export const projects = {
         title: 'Leader-Follower Robotic Arm',
         category: 'personal',
         tagline: 'A 4-DOF arm that mirrors a hand-held replica in real time, with record and playback',
-        tools: ['SolidWorks', 'KiCad', 'Arduino', 'JLCPCB', '3D Printing'],
+        tools: [],
 
         // Card thumbnail + big image at the top of the detail page.
         image: `${import.meta.env.BASE_URL}media/robotic-arm/Main_Photo.jpeg`,
@@ -128,13 +128,7 @@ int readSmoothedPot(int joint) {
         title: 'Chompy: Underwater Retrieval Device',
         tagline: 'A sheet-metal scooping claw for an APSC 101 design competition',
         category: 'school',
-        tools: [
-            'Arduino',
-            'C/C++',
-            'Servo motors',
-            'CAD', // TODO(me): replace with the actual package (Fusion 360 / SolidWorks / Onshape)
-            'Sheet metal fabrication',
-        ],
+        tools: [],
 
         // Card thumbnail (home grid). No hero banner on the detail page.
         image: `${import.meta.env.BASE_URL}projects/chompy/card.jpg`,
@@ -269,13 +263,7 @@ int readSmoothedPot(int joint) {
         title: 'Rainwater Harvester: System Simulation & Design',
         tagline: 'A 5-year spreadsheet model to design an off-grid drinking-water system',
         category: 'school',
-        tools: [
-            'Excel',
-            'Spreadsheet simulation',
-            'Fluid mechanics',
-            'Energy systems modeling',
-            'Data analysis',
-        ],
+        tools: [],
 
         // Card thumbnail (home grid). Hero hidden; image shown between Problem and What I Did instead.
         image: `${import.meta.env.BASE_URL}projects/rwh/card.png`,

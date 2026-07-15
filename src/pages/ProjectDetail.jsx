@@ -304,11 +304,13 @@ export default function ProjectDetail() {
                 <header className="project-detail-header">
                     <h1>{project.title}</h1>
                     <p className="project-detail-tagline">{project.tagline}</p>
-                    <ul className="project-tools">
-                        {project.tools.map((tool) => (
-                            <li key={tool}>{tool}</li>
-                        ))}
-                    </ul>
+                    {project.tools.length > 0 && (
+                        <ul className="project-tools">
+                            {project.tools.map((tool) => (
+                                <li key={tool}>{tool}</li>
+                            ))}
+                        </ul>
+                    )}
                 </header>
 
                 {heroImage && (
