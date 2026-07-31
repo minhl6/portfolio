@@ -115,8 +115,8 @@ int readSmoothedPot(int joint) {
             },
         ],
     },
-    'axial-flux-generator': {
-        title: 'Axial Flux Generator',
+    'two-speed-hand-crank-generator': {
+        title: 'Two-Speed Hand-Crank Generator',
         category: 'personal',
         tagline: 'A hand crank that powers different devices by switching gears to match each one\'s voltage',
         image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/card.png`,

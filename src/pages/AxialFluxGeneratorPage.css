@@ -1,0 +1,159 @@
+/* Scoped to AxialFluxGeneratorPage only — safe to delete along with the
+   component and its route without affecting any other page. */
+
+/* ---------- overview (header/tagline/big-idea/results image/cards grid) ---------- */
+
+.afg-overview {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.45s ease;
+}
+
+/* visibility switches instantly when SHOWING (no delay listed above), but
+   is delayed until after the fade-out finishes when HIDING (delay below) —
+   that asymmetry is what makes hiding wait for the fade, while showing
+   doesn't wait at all */
+.afg-overview.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+}
+
+.afg-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+}
+
+.afg-card-trigger {
+    cursor: pointer;
+}
+
+.afg-card-trigger:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* ---------- expanded panel ---------- */
+
+/* fixed and anchored just below the site's sticky header (72px, from
+   .header-inner) so the nav bar is always left alone; reuses .container's
+   max-width/padding/centering for the same content width as the rest of
+   the page, with left/right:0 added so that centering still resolves
+   correctly under position:fixed */
+.afg-expanded {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    bottom: 1.5rem;
+    overflow-y: auto;
+    background: var(--color-bg);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+}
+
+.afg-expanded.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* scroll containers clip ALL descendants, including position:fixed ones —
+   so while the clone image is mid-flight (e.g. flying up from a card near
+   the bottom of a scrolled page) it can get sliced off by this panel's own
+   edge. Only clip once settled, when the image is safely within bounds;
+   allow it to render outside those bounds while animating. */
+.afg-expanded.is-flying {
+    overflow: visible;
+}
+
+.afg-expanded-topbar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 0 0.5rem;
+    background: var(--color-bg);
+    z-index: 42;
+}
+
+.afg-expanded-close {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.afg-expanded-close:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.afg-expanded-hero {
+    margin-bottom: 1.75rem;
+}
+
+/* the title is a normal heading sitting above the image (not overlaid on
+   it) — it only reveals once the image has actually arrived
+   (animPhase === 'open'), so it appears right after the image finishes
+   expanding rather than during the grow */
+.afg-expanded-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.8rem;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.afg-expanded-hero.is-settled .afg-expanded-title {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.2s ease 0.03s, transform 0.2s ease 0.03s;
+}
+
+/* settled (in-flow) size/shape for the shared-element image. While a FLIP
+   transition is in flight, inline styles (position:fixed + explicit px
+   top/left/width/height) take over and override these — this rule only
+   governs how the image looks once it's back in normal flow. */
+.afg-expanded-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 0;
+}
+
+.afg-expanded-body p {
+    color: var(--color-muted);
+    margin-bottom: 1.25rem;
+}
+
+.afg-expanded-gallery {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.afg-expanded-gallery img {
+    border-radius: 8px;
+    flex: 1 1 220px;
+    width: 100%;
+}
+
+@media (max-width: 720px) {
+    .afg-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
