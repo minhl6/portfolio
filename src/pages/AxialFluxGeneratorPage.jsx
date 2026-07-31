@@ -336,7 +336,7 @@ export default function AxialFluxGeneratorPage() {
                         <img ref={flipImgRef} className="afg-expanded-image" src={activeCard.image} alt={activeCard.title} />
                     </div>
 
-                    <div className="afg-expanded-body">
+                    <div className={`afg-expanded-body ${animPhase === 'open' ? 'is-settled' : ''}`}>
                         <p>{activeCard.panel.text}</p>
                         <div className="afg-expanded-gallery">
                             {activeCard.panel.images.map((src) => (

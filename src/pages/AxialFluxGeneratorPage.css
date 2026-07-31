@@ -43,6 +43,15 @@
    max-width/padding/centering for the same content width as the rest of
    the page, with left/right:0 added so that centering still resolves
    correctly under position:fixed */
+/* opacity is intentionally NOT animated here. This backdrop must be fully
+   opaque the instant it mounts, not crossfade in — while it and the
+   overview's own fade-out (see .afg-overview.is-hidden above) were both
+   independently animating opacity on the same ~0.45s timeline, there was a
+   window (most of the transition, not just the edges) where both were
+   simultaneously translucent, letting the other two cards bleed through
+   underneath. Since this background is the same solid color as the page
+   itself, making it opaque immediately is visually seamless (no flash) and
+   guarantees zero bleed-through in both directions. */
 .afg-expanded {
     position: fixed;
     top: 72px;
@@ -52,13 +61,10 @@
     overflow-y: auto;
     background: var(--color-bg);
     z-index: 40;
-    opacity: 0;
     pointer-events: none;
-    transition: opacity 0.45s ease;
 }
 
 .afg-expanded.is-active {
-    opacity: 1;
     pointer-events: auto;
 }
 
@@ -133,6 +139,18 @@
     object-fit: cover;
     border-radius: 10px;
     margin: 0;
+}
+
+/* held invisible until the hero image finishes growing (is-settled), so
+   nothing but the flying image itself is visible during the transition */
+.afg-expanded-body {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.afg-expanded-body.is-settled {
+    opacity: 1;
+    transition: opacity 0.2s ease 0.03s;
 }
 
 .afg-expanded-body p {
