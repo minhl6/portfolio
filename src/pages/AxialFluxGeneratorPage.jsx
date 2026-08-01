@@ -14,6 +14,18 @@ import './AxialFluxGeneratorPage.css';
 // constant so the JS phase timing and the CSS animations can never drift apart
 const TRANSITION_MS = 450;
 
+// positions are % of the media box, 0-100 from top-left. `anchors` is a list
+// (not a single point) so a label can fan out multiple leader lines to
+// several spots on the part — Double 12 Magnet Rotors and Frame each point
+// at two locations from one text box. `label` is where the text sits.
+const GENERATOR_EXPLODED_LABELS = [
+    { id: 'stator', text: '9 Coil Stator', label: [38.4, 14.1], anchors: [[47.7, 40.5]] },
+    { id: 'rotors', text: 'Double 12 Magnet Rotors', label: [86.4, 22.6], anchors: [[67.7, 33.8]] },
+    { id: 'pulley', text: '20T Pulley', label: [17.4, 42.4], anchors: [[29.0, 61.1]] },
+    { id: 'frame', text: 'Frame', label: [89, 50], anchors: [[75.8, 42.4], [74.6, 57.4]] },
+    { id: 'shaft', text: '8mm Steel Shaft', label: [62.9, 77.8], anchors: [[49.3, 45.6]] },
+];
+
 const CARDS = [
     {
         id: 'gearbox',
@@ -33,12 +45,56 @@ const CARDS = [
         id: 'generator',
         title: 'Axial Flux Generator',
         blurb: 'The axial flux alternator itself — coil layout, magnet rotor, and stator construction.',
-        image: 'https://picsum.photos/seed/afg-generator-card/600/400',
+        // first frame of exploded.mp4 (extracted, not a separate screenshot) so the
+        // card thumbnail, the settled pre-video image, and the video's own opening
+        // frame are pixel-identical — the swap to <video> on open has nothing to hide
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/exploded-first-frame.png`,
+        video: `${import.meta.env.BASE_URL}projects/axial-flux-generator/exploded.mp4`,
+        // the model isn't centered in the source frame (it sits right of the
+        // frame's true center) — shifting the object-fit:cover crop's focal
+        // point right of the default 50% balances the left/right margins
+        // instead of cropping straight down the frame's own midline
+        mediaPosition: '64% center',
+        explodedLabels: GENERATOR_EXPLODED_LABELS,
+        caption: 'A 3D printed, hand-wound generator that turns rotation into three-phase electricity. As the magnet rotor spins past the stator coils, it induces an AC current, later rectified into the DC power that drives the load.',
         panel: {
-            text: 'Placeholder copy describing the generator build: coil winding, magnet arrangement, and stator/rotor spacing. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+            text: 'The stator carries 9 coils wound with 160 turns of 24-gauge wire in a three-phase star configuration, sitting 2mm from a double 12-magnet rotor. That gap was chosen as tight as it could safely go: close enough to keep magnetic flux strong, since flux falls off sharply with distance, but with enough clearance that the spinning magnets never touch the coils.',
             images: [
-                'https://picsum.photos/seed/afg-generator-1/500/360',
-                'https://picsum.photos/seed/afg-generator-2/500/360',
+                `${import.meta.env.BASE_URL}projects/axial-flux-generator/rotor-and-stator.jpeg`,
+                `${import.meta.env.BASE_URL}projects/axial-flux-generator/air-gap.jpeg`,
+            ],
+            extraSections: [
+                {
+                    id: 'building-the-stator',
+                    heading: 'Building the Stator',
+                    subtitle: 'Each coil was hand-wound using a 3D-printed jig, then assembled into the stator. Measuring across any two of the three AC leads read about 6.8Ω. Since the star winding puts two coil groups in series between any pair of leads, that works out to roughly 3.4Ω per single phase, a number used later to check voltage sag under load.',
+                    images: [
+                        `${import.meta.env.BASE_URL}projects/axial-flux-generator/build-2.jpeg`,
+                        `${import.meta.env.BASE_URL}projects/axial-flux-generator/build-1.jpeg`,
+                    ],
+                },
+                {
+                    id: 'spin-test',
+                    heading: 'The Spin Test',
+                    subtitle: 'The generator was hand-spun across a range of speeds, logging RPM and voltage both with nothing connected and with a small DC motor as a load. The no-load line came out to about 0.0074V per RPM, which meant hitting the 15V target needed roughly 2,020 RPM at the generator, or about a 27× gear ratio for a comfortable 75 RPM hand crank. The loaded line sits lower because current has to push through the generator\'s own coil resistance on top of the load\'s, and that\'s really where the sag comes from. It also takes longer to get going, since the diode\'s voltage drop stays about the same no matter the speed, so it costs more at low voltages than high ones.',
+                    images: [
+                        `${import.meta.env.BASE_URL}projects/axial-flux-generator/spin-test-graph.png`,
+                    ],
+                },
+                {
+                    id: 'improvements-limitations',
+                    heading: 'Improvements & Limitations',
+                    bullets: [
+                        {
+                            label: 'Wire gauge',
+                            text: 'I went with thinner 24 AWG wire to fit more turns per coil and boost open-circuit voltage, accepting more sag under load as the tradeoff. Thicker wire would\'ve meant less sag but a lower starting voltage.',
+                        },
+                        {
+                            label: 'Diodes',
+                            text: 'I used standard silicon diodes, which cost about 1.4V, a hit at low voltages. Switching to Schottky diodes (~0.6V) is a cheap upgrade I\'d make next time.',
+                        },
+                    ],
+                },
             ],
         },
     },
@@ -85,6 +141,12 @@ export default function AxialFluxGeneratorPage() {
     //   'closing'  - the image is flying back from the panel to its card rect
     const [openCard, setOpenCard] = useState(initialOpenCard);
     const [animPhase, setAnimPhase] = useState(() => (initialOpenCard() ? 'open' : 'idle'));
+
+    // exploded-view sequence for the Generator card only:
+    //   'pending' - not started (also the state while any other card is open)
+    //   'playing' - hero has swapped from the static image to the video, autoplaying
+    //   'ended'   - video finished and is holding on its last frame; labels fade in
+    const [videoState, setVideoState] = useState('pending');
 
     const cardImgRefsMap = useRef(new Map());
     const cardTriggerRefsMap = useRef(new Map());
@@ -203,6 +265,36 @@ export default function AxialFluxGeneratorPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [animPhase]);
 
+    // Generator-only: the instant the expand animation settles, swap from the
+    // static image to the exploded-view video (same spot, same size — see
+    // showVideo below) and let it autoplay. Guarded on videoState === 'pending'
+    // so this only fires once per open, not on every re-render while open.
+    useEffect(() => {
+        if (animPhase === 'open' && openCard === 'generator' && videoState === 'pending') {
+            setVideoState('playing');
+        }
+    }, [animPhase, openCard, videoState]);
+
+    const handleVideoEnded = () => {
+        setVideoState('ended');
+    };
+
+    // ==== TEMP DEV HELPER — delete this whole block + its onClick prop on
+    // .afg-expanded-media below (search "TEMP DEV HELPER") once done ====
+    // Click anywhere on the paused exploded-view frame to log where you
+    // clicked as a % of the media box's own width/height (not raw pixels,
+    // so it stays correct however the box ends up sized) — for finding real
+    // values to plug into GENERATOR_EXPLODED_LABELS' anchor/label points.
+    const handleExplodedFrameDevClick = (e) => {
+        if (openCard !== 'generator' || videoState !== 'ended') return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+        const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+        // eslint-disable-next-line no-console
+        console.log(`Clicked at: ${xPct.toFixed(1)}%, ${yPct.toFixed(1)}%`);
+    };
+    // ==== END TEMP DEV HELPER ====
+
     const handleExpand = (id) => {
         if (animPhase !== 'idle') return;
         const imgEl = cardImgRefsMap.current.get(id);
@@ -211,6 +303,7 @@ export default function AxialFluxGeneratorPage() {
         pendingRectRef.current = { start: rectToPlain(imgEl.getBoundingClientRect()), end: null };
         setOpenCard(id);
         setAnimPhase('opening');
+        setVideoState('pending');
 
         const url = `${window.location.pathname}${window.location.search}#${id}`;
         window.history.pushState(null, '', url);
@@ -293,6 +386,7 @@ export default function AxialFluxGeneratorPage() {
                                             shrink-back animation, however the user has scrolled/resized */}
                                         <img
                                             ref={(el) => cardImgRefsMap.current.set(card.id, el)}
+                                            className={card.mediaPosition ? 'afg-media-shift-right' : ''}
                                             src={card.image}
                                             alt={card.title}
                                             loading="lazy"
@@ -333,7 +427,88 @@ export default function AxialFluxGeneratorPage() {
 
                     <div className={`afg-expanded-hero ${animPhase === 'open' ? 'is-settled' : ''}`}>
                         <h2 className="afg-expanded-title">{activeCard.title}</h2>
-                        <img ref={flipImgRef} className="afg-expanded-image" src={activeCard.image} alt={activeCard.title} />
+                        {activeCard.caption && <p className="afg-expanded-caption">{activeCard.caption}</p>}
+                        {/* onClick is the TEMP DEV HELPER — see handleExplodedFrameDevClick above */}
+                        <div className="afg-expanded-media" onClick={handleExplodedFrameDevClick}>
+                            {/* once the exploded-view video has been kicked off (videoState
+                                leaves 'pending'), it replaces the static image in this exact
+                                spot and keeps showing (playing, then paused on its last frame)
+                                through 'open' AND 'closing' — only the plain <img> participates
+                                in the FLIP grow/shrink measurement, so swapping mid-'opening'
+                                would break that; the swap only happens once already settled. */}
+                            {/* object-position is applied via a CSS class, not an inline style —
+                                the FLIP settle logic (opening's finalize timeout) does
+                                `img.style.cssText = ''` on this exact element, which would wipe
+                                an inline style but leaves className alone */}
+                            {activeCard.video && videoState !== 'pending' ? (
+                                <video
+                                    ref={flipImgRef}
+                                    className={`afg-expanded-image ${activeCard.mediaPosition ? 'afg-media-shift-right' : ''}`}
+                                    src={activeCard.video}
+                                    muted
+                                    playsInline
+                                    autoPlay
+                                    preload="auto"
+                                    onEnded={handleVideoEnded}
+                                />
+                            ) : (
+                                <img
+                                    ref={flipImgRef}
+                                    className={`afg-expanded-image ${activeCard.mediaPosition ? 'afg-media-shift-right' : ''}`}
+                                    src={activeCard.image}
+                                    alt={activeCard.title}
+                                />
+                            )}
+                            {activeCard.explodedLabels && (
+                                // gated on animPhase === 'open' too (not just videoState), so
+                                // the labels disappear the instant 'closing' starts — they sit
+                                // in normal document flow while the video/image shrinks away
+                                // via its own independent fixed-position FLIP, so leaving them
+                                // visible during close would strand them floating over the now-
+                                // empty spot instead of following the shrinking media.
+                                <div className={`afg-exploded-labels ${videoState === 'ended' && animPhase === 'open' ? 'is-visible' : ''}`}>
+                                    <svg className="afg-exploded-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                        {/* one <line> per anchor — a label with multiple anchors (e.g.
+                                            "Double 12 Magnet Rotors", "Frame") fans out several lines
+                                            from the same text box, all sharing that label's stagger delay */}
+                                        {activeCard.explodedLabels.flatMap((lbl, i) =>
+                                            lbl.anchors.map((anchor, j) => (
+                                                <line
+                                                    key={`${lbl.id}-${j}`}
+                                                    x1={lbl.label[0]}
+                                                    y1={lbl.label[1]}
+                                                    x2={anchor[0]}
+                                                    y2={anchor[1]}
+                                                    style={{ transitionDelay: `${i * 0.15}s` }}
+                                                />
+                                            ))
+                                        )}
+                                    </svg>
+                                    {/* endpoint dots as plain HTML circles (not SVG) so they render
+                                        as true circles regardless of the media box's aspect ratio —
+                                        the SVG lines above use preserveAspectRatio="none", which would
+                                        stretch an <svg><circle> into an ellipse in a non-square box */}
+                                    {activeCard.explodedLabels.flatMap((lbl, i) =>
+                                        lbl.anchors.map((anchor, j) => (
+                                            <span
+                                                key={`${lbl.id}-dot-${j}`}
+                                                className="afg-exploded-dot"
+                                                style={{ left: `${anchor[0]}%`, top: `${anchor[1]}%`, transitionDelay: `${i * 0.15}s` }}
+                                            />
+                                        ))
+                                    )}
+                                    {activeCard.explodedLabels.map((lbl, i) => (
+                                        <span
+                                            key={lbl.id}
+                                            className="afg-exploded-label-text"
+                                            style={{ left: `${lbl.label[0]}%`, top: `${lbl.label[1]}%`, transitionDelay: `${i * 0.15}s` }}
+                                        >
+                                            {lbl.text}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className={`afg-expanded-body ${animPhase === 'open' ? 'is-settled' : ''}`}>
@@ -343,6 +518,43 @@ export default function AxialFluxGeneratorPage() {
                                 <img key={src} src={src} alt={`${activeCard.title} placeholder`} loading="lazy" />
                             ))}
                         </div>
+                        {activeCard.panel.extraSections?.map((section) => (
+                            <div className="afg-expanded-extra-section" key={section.id}>
+                                <h3>{section.heading}</h3>
+                                {section.subtitle && <p className="afg-expanded-extra-subtitle">{section.subtitle}</p>}
+                                {section.bullets && (
+                                    <ul className="afg-expanded-extra-bullets">
+                                        {section.bullets.map((bullet) => (
+                                            <li key={bullet.label}>
+                                                <strong>{bullet.label}:</strong> {bullet.text}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                                {section.images?.length > 1 ? (
+                                    <div className="afg-expanded-gallery">
+                                        {section.images.map((src) => (
+                                            // build-1.jpeg is a tall portrait shot cropped down to this
+                                            // gallery's 4:3 box — shifting the crop window down (Y>50%)
+                                            // keeps more of the bottom of the frame and trims more off
+                                            // the top, instead of the default even top/bottom crop
+                                            <img
+                                                key={src}
+                                                src={src}
+                                                alt={section.heading}
+                                                loading="lazy"
+                                                style={src.includes('build-1') ? { objectPosition: 'center 75%' } : undefined}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : section.images?.length === 1 ? (
+                                    // a single image (e.g. a chart) shows at its own natural aspect
+                                    // ratio, uncropped — the side-by-side gallery above is only for
+                                    // when there are two photos to crop into matching boxes
+                                    <img className="afg-expanded-extra-image" src={section.images[0]} alt={section.heading} loading="lazy" />
+                                ) : null}
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}

@@ -128,10 +128,36 @@
     transition: opacity 0.2s ease 0.03s, transform 0.2s ease 0.03s;
 }
 
-/* settled (in-flow) size/shape for the shared-element image. While a FLIP
-   transition is in flight, inline styles (position:fixed + explicit px
-   top/left/width/height) take over and override these — this rule only
-   governs how the image looks once it's back in normal flow. */
+/* subtitle/caption sitting between the title and the media box — same
+   reveal treatment as the title, just a beat later, so it cascades in
+   right after the title rather than at the exact same instant */
+.afg-expanded-caption {
+    margin: 0 0 1.25rem;
+    color: var(--color-muted);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.afg-expanded-hero.is-settled .afg-expanded-caption {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.2s ease 0.08s, transform 0.2s ease 0.08s;
+}
+
+.afg-expanded-media {
+    position: relative;
+}
+
+/* settled (in-flow) size/shape for the shared-element image (or, for the
+   Generator card, the video that replaces it post-settle — same class, same
+   box, so the swap is seamless). While a FLIP transition is in flight,
+   inline styles (position:fixed + explicit px top/left/width/height) take
+   over and override these — this rule only governs the settled look.
+   object-fit: cover against a 3/2 box crops the source's LEFT/RIGHT edges
+   (not top/bottom) whenever the source is wider than 3:2, which is the case
+   for the exploded-view video (~2.08:1, mostly side padding around the
+   model) — it fills the full height and only trims the sides evenly. */
 .afg-expanded-image {
     display: block;
     width: 100%;
@@ -139,6 +165,84 @@
     object-fit: cover;
     border-radius: 10px;
     margin: 0;
+}
+
+/* the model in the Generator card's source frame/video isn't centered — it
+   sits right of the frame's true midpoint — so a plain center crop leaves
+   visibly more empty space on the left than the right. Shifting the
+   object-fit focal point rightward balances the margins. Applies to the
+   overview thumbnail, the settled hero image, and the hero video alike. */
+.afg-media-shift-right {
+    object-position: 64% center;
+}
+
+/* exploded-view part callouts: absolutely positioned over the media box,
+   coordinates in .afg-expanded-media percentages via the shared 0-100 SVG
+   viewBox / left+top percentages below. Hidden until the video finishes
+   AND the panel is fully open (see the JSX comment on this element) —
+   staggered per-label via an inline transition-delay set from JS. */
+.afg-exploded-labels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.afg-exploded-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.afg-exploded-lines line {
+    stroke: var(--color-text);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.afg-exploded-labels.is-visible .afg-exploded-lines line {
+    opacity: 0.55;
+}
+
+.afg-exploded-label-text {
+    position: absolute;
+    transform: translate(-50%, -40%);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.afg-exploded-labels.is-visible .afg-exploded-label-text {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+/* small solid dot marking exactly where a leader line touches its part —
+   plain HTML/CSS (not SVG) so it stays a true circle regardless of the
+   media box's aspect ratio, unlike the lines above (which use
+   preserveAspectRatio="none" and would stretch an SVG circle into an oval) */
+.afg-exploded-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-text);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.afg-exploded-labels.is-visible .afg-exploded-dot {
+    opacity: 1;
 }
 
 /* held invisible until the hero image finishes growing (is-settled), so
@@ -164,10 +268,66 @@
     flex-wrap: wrap;
 }
 
+/* one source is landscape (Rotor and Stator), the other portrait (AirGap) —
+   without a shared aspect-ratio + object-fit:cover, the tall portrait shot
+   forces a much taller box than the landscape one, so instead of sitting
+   side by side they end up stacked with the portrait one dominating.
+   Cropping both to the same box keeps them a clean two-up row.
+   No `width` here on purpose — an explicit width (even 100%) overrides the
+   flex-basis below and forces each image to claim the full row width.
+   min-width: 0 is the other half of that fix: flex items default to
+   min-width:auto, which for a replaced element like <img> resolves to its
+   intrinsic pixel size (2000px+ for these source photos) — that silently
+   overrides flex-shrink and forces each one onto its own line regardless
+   of flex-basis, which is what was actually stacking them. */
 .afg-expanded-gallery img {
     border-radius: 8px;
-    flex: 1 1 220px;
+    flex: 1 1 260px;
+    min-width: 0;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+/* additional named sub-sections below the main gallery (e.g. "Building the
+   Stator") — same heading scale as the rest of the page, own gallery row
+   below its subtitle, reusing .afg-expanded-gallery's side-by-side crop */
+.afg-expanded-extra-section {
+    margin-top: 2rem;
+}
+
+.afg-expanded-extra-section h3 {
+    margin: 0 0 0.5rem;
+}
+
+.afg-expanded-extra-subtitle {
+    color: var(--color-muted);
+    margin-bottom: 1.25rem;
+}
+
+/* single-image sections (e.g. a chart) — full width, natural aspect ratio,
+   not cropped/paired like the two-photo .afg-expanded-gallery rows above */
+.afg-expanded-extra-image {
+    display: block;
     width: 100%;
+    border-radius: 8px;
+}
+
+.afg-expanded-extra-bullets {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--color-muted);
+}
+
+.afg-expanded-extra-bullets li {
+    margin-bottom: 0.75rem;
+}
+
+.afg-expanded-extra-bullets li:last-child {
+    margin-bottom: 0;
+}
+
+.afg-expanded-extra-bullets strong {
+    color: var(--color-text);
 }
 
 @media (max-width: 720px) {
