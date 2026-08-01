@@ -44,7 +44,7 @@ const CARDS = [
     {
         id: 'generator',
         title: 'Axial Flux Generator',
-        blurb: 'The axial flux alternator itself — coil layout, magnet rotor, and stator construction.',
+        blurb: 'Hand-wound stator and magnet rotor design, with the voltage and sag data measured from it.',
         // first frame of exploded.mp4 (extracted, not a separate screenshot) so the
         // card thumbnail, the settled pre-video image, and the video's own opening
         // frame are pixel-identical — the swap to <video> on open has nothing to hide
