@@ -26,18 +26,187 @@ const GENERATOR_EXPLODED_LABELS = [
     { id: 'shaft', text: '8mm Steel Shaft', label: [62.9, 77.8], anchors: [[49.3, 45.6]] },
 ];
 
+// same [x%, y%] label/anchors scheme as GENERATOR_EXPLODED_LABELS above, but
+// for the always-visible "How it Works?" real-photo overlay (no video-state
+// gating — this one isn't tied to the exploded-view sequence).
+const REAL_PHOTO_LABELS = [
+    { id: 'generator', text: 'Generator', label: [77.8, 22.7], anchors: [[66.9, 43.1]] },
+    { id: 'electronics', text: 'Measurement Electronics & Rectifier Circuit', label: [66.2, 87.4], anchors: [[80.4, 64.7]] },
+    { id: 'gearbox', text: 'Gearbox', label: [46.3, 19.2], anchors: [[35.0, 44.9]] },
+];
+
+const SOLIDWORKS_VIEWS = [
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/solidworks-isometric.png`, caption: 'Isometric View' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/solidworks-top.png`, caption: 'Top View' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/solidworks-side.png`, caption: 'Side View' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/solidworks-back.png`, caption: 'Back View' },
+];
+
+const EARLY_PROTOTYPE_PHOTOS = [
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/opensource-gearbox.jpeg`, caption: 'Open-source mini two-speed gearbox' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/v1-gearbox.jpeg`, caption: 'Fixed single-ratio gearbox' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gearbox-comparison.jpeg`, caption: 'Side-by-side comparison to final gearbox' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/fixed-gearbox-27x-iso.png`, caption: 'Fixed gearbox CAD model' },
+];
+
+const GEARBOX_PROBLEMS_SOLVED = [
+    {
+        challenge: 'Set Screw Slipping',
+        description: 'The gears kept slipping on the smooth steel shaft under load. I machined a flat where each set screw lands, giving it a solid surface to bite into instead of relying on friction alone.',
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/filed-flat.jpeg`,
+    },
+    {
+        challenge: 'Bulged Gear Teeth',
+        description: 'Printed with too little infill, the top of each tooth bulged out and made the gears bind. More infill gave the top layers a solid base to print on and the teeth came out clean.',
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/bulge-teeth.jpeg`,
+    },
+    {
+        challenge: 'Dialing In Tolerances',
+        description: 'Printed holes come out undersized, so I made test blocks to find the right fit for bearings, shafts, screws, and magnet pockets, plus a gauge to lock in the gear spacing before committing to real parts.',
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/test-blocks.jpeg`,
+    },
+];
+
+// copied from ProjectCarousel in ProjectDetail.jsx (same drag/momentum/
+// infinite-loop behavior as the robotic arm's Custom PCB carousel) — kept
+// local to this file since this page doesn't go through ProjectDetail's
+// rendering pipeline.
+function SolidworksCarousel({ items, heading }) {
+    const trackRef = useRef(null);
+    const drag = useRef({ active: false, lastX: 0, lastTime: 0, velocity: 0, rafId: null });
+    const tripledItems = [...items, ...items, ...items];
+
+    useEffect(() => {
+        const track = trackRef.current;
+        track.scrollLeft = track.scrollWidth / 3;
+
+        const onScroll = () => {
+            const band = track.scrollWidth / 3;
+            if (track.scrollLeft >= band * 2) {
+                track.scrollLeft -= band;
+            } else if (track.scrollLeft < band) {
+                track.scrollLeft += band;
+            }
+        };
+        track.addEventListener('scroll', onScroll);
+        return () => track.removeEventListener('scroll', onScroll);
+    }, [items]);
+
+    const stopMomentum = () => {
+        if (drag.current.rafId) {
+            cancelAnimationFrame(drag.current.rafId);
+            drag.current.rafId = null;
+        }
+    };
+
+    const runMomentum = () => {
+        const track = trackRef.current;
+        drag.current.velocity *= 0.94;
+        if (!track || Math.abs(drag.current.velocity) < 0.1) {
+            drag.current.rafId = null;
+            return;
+        }
+        track.scrollLeft -= drag.current.velocity;
+        drag.current.rafId = requestAnimationFrame(runMomentum);
+    };
+
+    const onPointerDown = (e) => {
+        if (e.pointerType !== 'mouse') return;
+        e.preventDefault();
+        stopMomentum();
+        const track = trackRef.current;
+        track.classList.add('is-dragging');
+        drag.current = { active: true, lastX: e.clientX, lastTime: performance.now(), velocity: 0, rafId: null };
+        track.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerMove = (e) => {
+        if (!drag.current.active) return;
+        const track = trackRef.current;
+        const now = performance.now();
+        const dx = e.clientX - drag.current.lastX;
+        const dt = Math.max(now - drag.current.lastTime, 1);
+        track.scrollLeft -= dx;
+        drag.current.velocity = drag.current.velocity * 0.7 + (dx / dt) * 16 * 0.3;
+        drag.current.lastX = e.clientX;
+        drag.current.lastTime = now;
+    };
+
+    const endDrag = (e) => {
+        if (!drag.current.active) return;
+        drag.current.active = false;
+        const track = trackRef.current;
+        track.classList.remove('is-dragging');
+        track.releasePointerCapture(e.pointerId);
+        if (Math.abs(drag.current.velocity) > 0.5) {
+            drag.current.rafId = requestAnimationFrame(runMomentum);
+        }
+    };
+
+    return (
+        <div
+            className="project-carousel"
+            ref={trackRef}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerLeave={endDrag}
+        >
+            {tripledItems.map(({ image, caption }, i) => (
+                <figure className="project-carousel-item" key={`${image}-${i}`}>
+                    <img src={image} alt={caption || heading} loading="lazy" draggable={false} />
+                    {caption && <figcaption>{caption}</figcaption>}
+                </figure>
+            ))}
+        </div>
+    );
+}
+
 const CARDS = [
     {
         id: 'gearbox',
-        title: 'Gearbox',
-        blurb: 'Two-speed gear switching to match crank RPM to each device\'s ideal voltage range.',
-        image: 'https://picsum.photos/seed/afg-gearbox-card/600/400',
+        title: 'Gearbox & Transmission',
+        blurb: 'How I designed the transmission, and the early gearbox prototypes and failures that got me to the final design.',
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gearbox-card.png`,
+        video: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gearbox-assembly.mp4`,
+        loopVideo: true,
+        mediaZoom: true,
+        caption: 'The two-speed transmission is the heart of the project. It turns gear selection into voltage selection, doing mechanically what an electronic regulator normally does.',
         panel: {
-            text: 'Placeholder copy describing the gearbox design: gear ratios, the shift mechanism, and how the two speeds were chosen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+            text: 'The dog clutch is what lets the gearbox change ratio while the crank is still turning. Both gears spin freely on the output shaft until a sliding collar locks one of them, driving the shaft through a splined sleeve. What makes it hold is the 4° back taper on the dog teeth: each tooth is slightly wider at the tip than at the root, so the harder you crank, the more the torque pulls the collar inward and keeps it engaged.',
             images: [
-                'https://picsum.photos/seed/afg-gearbox-1/500/360',
-                'https://picsum.photos/seed/afg-gearbox-2/500/360',
-                'https://picsum.photos/seed/afg-gearbox-3/500/360',
+                `${import.meta.env.BASE_URL}projects/axial-flux-generator/transmission-labelled-diagram.png`,
+                `${import.meta.env.BASE_URL}projects/axial-flux-generator/collar-section-view.png`,
+            ],
+            extraSections: [
+                {
+                    id: 'collar-detail-photos',
+                    images: [
+                        `${import.meta.env.BASE_URL}projects/axial-flux-generator/through-hole-screw.jpeg`,
+                        `${import.meta.env.BASE_URL}projects/axial-flux-generator/closeup-collar.jpeg`,
+                    ],
+                },
+                {
+                    id: 'early-prototypes',
+                    heading: 'The Build Process',
+                    subtitle: "None of this worked the first time. The gearbox started as a fixed single-ratio box before becoming two-speed, and dialing in print tolerances and part fit took plenty of reprints along the way. These are some of the versions and failures that got it there, and what each one taught me.",
+                    subheading: 'Early Gearbox Prototypes',
+                    subheadingText: 'I started by printing an open-source two-speed gearbox to understand how a dog clutch shifts in practice. Then I built my own fixed 27× box, belt-coupled to the generator, which proved the drivetrain and generator worked. It later became my efficiency baseline, running about 7 percent more efficient than the final two-speed box under identical conditions, since the extra gear meshes were the price of adding gear selection.',
+                    carousel: EARLY_PROTOTYPE_PHOTOS,
+                },
+                {
+                    id: 'custom-gears',
+                    heading: 'Custom Gears',
+                    subtitle: 'The following engineering drawing was a common combo gear I made for both my early fixed gearbox and my final design.',
+                    images: [
+                        `${import.meta.env.BASE_URL}projects/axial-flux-generator/60-teeth-gear-drawing.png`,
+                    ],
+                },
+                {
+                    id: 'problems-solved',
+                    heading: 'Problems I Solved',
+                    engineering: GEARBOX_PROBLEMS_SOLVED,
+                },
             ],
         },
     },
@@ -76,9 +245,17 @@ const CARDS = [
                 {
                     id: 'spin-test',
                     heading: 'The Spin Test',
-                    subtitle: 'The generator was hand-spun across a range of speeds, logging RPM and voltage both with nothing connected and with a small DC motor as a load. The no-load line came out to about 0.0074V per RPM, which meant hitting the 15V target needed roughly 2,020 RPM at the generator, or about a 27× gear ratio for a comfortable 75 RPM hand crank. The loaded line sits lower because current has to push through the generator\'s own coil resistance on top of the load\'s, and that\'s really where the sag comes from. It also takes longer to get going, since the diode\'s voltage drop stays about the same no matter the speed, so it costs more at low voltages than high ones.',
+                    subtitle: "The spin test set the target for the whole drivetrain. By measuring voltage per RPM, both unloaded and under a small DC motor load, I could calculate how fast the generator had to spin to reach my voltage goal, and from there what gear ratio would get there from a comfortable 75 RPM hand crank. That's what fixed the high gear at 27×.",
                     images: [
                         `${import.meta.env.BASE_URL}projects/axial-flux-generator/spin-test-graph.png`,
+                    ],
+                },
+                {
+                    id: 'voltage-sag',
+                    heading: 'Voltage Sag Under Load',
+                    subtitle: "The generator's voltage drops as it delivers more current. To measure it, I held a steady crank speed and swapped in different resistor loads, logging voltage and current at each. The points fall on a straight line whose slope lands close to the coil resistance I measured with a multimeter. This confirms the voltage sag comes mainly from coil resistance, a normal generator trait.",
+                    images: [
+                        `${import.meta.env.BASE_URL}projects/axial-flux-generator/voltage-sag.png`,
                     ],
                 },
                 {
@@ -265,12 +442,12 @@ export default function AxialFluxGeneratorPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [animPhase]);
 
-    // Generator-only: the instant the expand animation settles, swap from the
-    // static image to the exploded-view video (same spot, same size — see
+    // For any card with a video: the instant the expand animation settles,
+    // swap from the static image to the video (same spot, same size — see
     // showVideo below) and let it autoplay. Guarded on videoState === 'pending'
     // so this only fires once per open, not on every re-render while open.
     useEffect(() => {
-        if (animPhase === 'open' && openCard === 'generator' && videoState === 'pending') {
+        if (animPhase === 'open' && CARD_BY_ID[openCard]?.video && videoState === 'pending') {
             setVideoState('playing');
         }
     }, [animPhase, openCard, videoState]);
@@ -294,6 +471,22 @@ export default function AxialFluxGeneratorPage() {
         console.log(`Clicked at: ${xPct.toFixed(1)}%, ${yPct.toFixed(1)}%`);
     };
     // ==== END TEMP DEV HELPER ====
+
+    // ==== TEMP DEV HELPER 2 — delete this whole block + its onClick prop on
+    // the "How it Works?" real photo below (search "TEMP DEV HELPER 2") once
+    // done ====
+    // Same idea as the one above: click anywhere on the labelled real photo
+    // to log where you clicked as a % of the image box's own width/height —
+    // for finding real values to plug into HOW_IT_WORKS_LABELS' anchor/label
+    // points.
+    const handleRealPhotoDevClick = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const xPct = ((e.clientX - rect.left) / rect.width) * 100;
+        const yPct = ((e.clientY - rect.top) / rect.height) * 100;
+        // eslint-disable-next-line no-console
+        console.log(`Clicked at: ${xPct.toFixed(1)}%, ${yPct.toFixed(1)}%`);
+    };
+    // ==== END TEMP DEV HELPER 2 ====
 
     const handleExpand = (id) => {
         if (animPhase !== 'idle') return;
@@ -351,21 +544,163 @@ export default function AxialFluxGeneratorPage() {
 
                     <header className="project-detail-header">
                         <h1>{project.title}</h1>
-                        <p className="project-detail-tagline">{project.tagline}</p>
+                        <p className="project-detail-tagline">A 3D printed hand-cranked generator that matches its own output voltage to the load using gear ratios, not electronics.</p>
                     </header>
 
-                    <div className="project-detail-body">
-                        <h3>The Big Idea</h3>
-                        <p>
-                            Placeholder paragraph explaining the core concept: a single hand crank drives a
-                            two-speed gearbox feeding an axial flux generator, so the same crank can charge a
-                            phone or a power tool battery just by shifting gears to match the target voltage.
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        </p>
+                    <div className="project-detail-video">
+                        <iframe
+                            src="https://www.youtube.com/embed/4W6Q12jll-k"
+                            title="Two-Speed Hand-Crank Generator demo video"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
                     </div>
 
-                    <div className="project-detail-image">
-                        <img src="https://picsum.photos/seed/afg-results-graph/1100/550" alt="Placeholder results graph" />
+                    <div className="project-detail-body">
+                        <h3>How it Works?</h3>
+                        <p>
+                            A hand crank drives a two-speed gearbox that uses a constant-mesh dog
+                            clutch, so the ratio can be changed while the crank is still turning.
+                            The gearbox turns a custom-wound axial flux generator through a belt,
+                            producing 3-phase AC that is rectified to DC and smoothed by capacitors.
+                            From there the output either drives a DC load directly or passes through
+                            a 5V buck regulator to charge a phone over USB. High gear suits phone
+                            charging; low gear extends the usable range down to smaller loads.
+                        </p>
+                        <div className="project-section-images afg-how-it-works-images">
+                            {/* onClick is TEMP DEV HELPER 2 — see handleRealPhotoDevClick above */}
+                            <div className="afg-how-it-works-image" onClick={handleRealPhotoDevClick}>
+                                <img
+                                    src={`${import.meta.env.BASE_URL}projects/axial-flux-generator/labelled-real.jpeg`}
+                                    alt="The two-speed hand-crank generator"
+                                />
+                                <div className="afg-exploded-labels is-visible">
+                                    <svg className="afg-exploded-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                        {REAL_PHOTO_LABELS.flatMap((lbl, i) =>
+                                            lbl.anchors.map((anchor, j) => (
+                                                <line
+                                                    key={`${lbl.id}-${j}`}
+                                                    x1={lbl.label[0]}
+                                                    y1={lbl.label[1]}
+                                                    x2={anchor[0]}
+                                                    y2={anchor[1]}
+                                                    style={{ transitionDelay: `${i * 0.15}s` }}
+                                                />
+                                            ))
+                                        )}
+                                    </svg>
+                                    {REAL_PHOTO_LABELS.flatMap((lbl, i) =>
+                                        lbl.anchors.map((anchor, j) => (
+                                            <span
+                                                key={`${lbl.id}-dot-${j}`}
+                                                className="afg-exploded-dot"
+                                                style={{ left: `${anchor[0]}%`, top: `${anchor[1]}%`, transitionDelay: `${i * 0.15}s` }}
+                                            />
+                                        ))
+                                    )}
+                                    {REAL_PHOTO_LABELS.map((lbl, i) => (
+                                        <span
+                                            key={lbl.id}
+                                            className="afg-exploded-label-text"
+                                            style={{ left: `${lbl.label[0]}%`, top: `${lbl.label[1]}%`, transitionDelay: `${i * 0.15}s` }}
+                                        >
+                                            {lbl.text.split('\n').map((line, k, arr) => (
+                                                <span key={k}>
+                                                    {line}
+                                                    {k < arr.length - 1 && <br />}
+                                                </span>
+                                            ))}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="afg-how-it-works-image">
+                                <img
+                                    src={`${import.meta.env.BASE_URL}projects/axial-flux-generator/power-train-diagram.png`}
+                                    alt="Power train diagram: hand crank to two-speed gearbox to belt drive to axial flux generator to bridge rectifier to DC power rail"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="project-detail-body">
+                        <h3>Why a Two-Speed Gearbox?</h3>
+                        <p>
+                            A generator's voltage depends on how fast it spins, but a hand can only crank
+                            within a narrow speed range. Normally an electronic regulator would fix the
+                            output. This design does that job mechanically instead: each gear ratio turns
+                            the same crank speed into a different output voltage, so selecting a gear is
+                            selecting a voltage. There is no battery, and no regulation electronics on the
+                            main output.
+                        </p>
+                        <div className="project-detail-image afg-gear-ratio-graph">
+                            <img
+                                src={`${import.meta.env.BASE_URL}projects/axial-flux-generator/gear-ratio-graph.png`}
+                                alt="Graph of generator voltage vs crank RPM for high gear (27x) and low gear (15x)"
+                            />
+                        </div>
+
+                        <h3>Up to 48% Drivetrain Efficiency</h3>
+                        <p>
+                            Efficiency rises with crank speed, from about 17% at low RPM to a plateau
+                            near 48% by 42 to 52 crank RPM, the peak within the measured range. A
+                            comfortable hand-cranking speed is around 75 RPM, above the measured range,
+                            so real-world use likely sits at or beyond this plateau.
+                        </p>
+                        <div className="afg-efficiency-images">
+                            <img
+                                src={`${import.meta.env.BASE_URL}projects/axial-flux-generator/efficiency-vs-rpm.png`}
+                                alt="Efficiency vs crank RPM for the two-speed gearbox in high gear (27x, 51-ohm load), peaking around 48%"
+                            />
+                            <img
+                                src={`${import.meta.env.BASE_URL}projects/axial-flux-generator/power-vs-rpm.png`}
+                                alt="Mechanical and electrical power vs crank RPM for the two-speed gearbox in high gear (27x, 51-ohm load)"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="project-detail-body">
+                        <h3>Mechanical Design</h3>
+                        <p>
+                            I designed the entire system in SolidWorks and 3D printed it in PLA, built
+                            around standard hardware: 608 bearings, 8 mm steel rod, a GT2 timing belt,
+                            and off-the-shelf screws and bolts. The printed parts were designed to fit
+                            these directly, with hand-machining only where needed, like the cross-drilled
+                            shafts and filed flats that lock the drivetrain together.
+                        </p>
+                        <SolidworksCarousel items={SOLIDWORKS_VIEWS} heading="Mechanical Design" />
+                    </div>
+
+                    <div className="project-detail-body">
+                        <h3>Other Demo Videos and Media</h3>
+                        <div className="afg-efficiency-images">
+                            <div className="project-detail-video">
+                                <iframe
+                                    src="https://www.youtube.com/embed/XeyOtD_APX4?mute=1"
+                                    title="USB Lamp Gearbox Generator Demo"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            </div>
+                            <div className="project-detail-video">
+                                <iframe
+                                    src="https://www.youtube.com/embed/MTipZfEfMKA"
+                                    title="Two-Speed Hand-Crank Generator demo video"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            </div>
+                        </div>
+                        <div className="project-detail-image afg-gear-ratio-graph">
+                            <img
+                                src={`${import.meta.env.BASE_URL}projects/axial-flux-generator/me-and-gearbox.jpeg`}
+                                alt="Me with the finished two-speed hand-crank generator"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="project-detail-body">
+                        <p><strong>Click in each system below to see how I designed, built, and tested it!</strong></p>
                     </div>
 
                     <div className="afg-cards-grid">
@@ -429,7 +764,10 @@ export default function AxialFluxGeneratorPage() {
                         <h2 className="afg-expanded-title">{activeCard.title}</h2>
                         {activeCard.caption && <p className="afg-expanded-caption">{activeCard.caption}</p>}
                         {/* onClick is the TEMP DEV HELPER — see handleExplodedFrameDevClick above */}
-                        <div className="afg-expanded-media" onClick={handleExplodedFrameDevClick}>
+                        <div
+                            className={`afg-expanded-media ${activeCard.compactMedia ? 'afg-media-compact' : ''} ${animPhase === 'open' ? 'afg-media-clip' : ''}`}
+                            onClick={handleExplodedFrameDevClick}
+                        >
                             {/* once the exploded-view video has been kicked off (videoState
                                 leaves 'pending'), it replaces the static image in this exact
                                 spot and keeps showing (playing, then paused on its last frame)
@@ -443,11 +781,12 @@ export default function AxialFluxGeneratorPage() {
                             {activeCard.video && videoState !== 'pending' ? (
                                 <video
                                     ref={flipImgRef}
-                                    className={`afg-expanded-image ${activeCard.mediaPosition ? 'afg-media-shift-right' : ''}`}
+                                    className={`afg-expanded-image ${activeCard.mediaPosition ? 'afg-media-shift-right' : ''} ${activeCard.mediaZoom ? 'afg-media-zoom' : ''}`}
                                     src={activeCard.video}
                                     muted
                                     playsInline
                                     autoPlay
+                                    loop={activeCard.loopVideo}
                                     preload="auto"
                                     onEnded={handleVideoEnded}
                                 />
@@ -520,8 +859,14 @@ export default function AxialFluxGeneratorPage() {
                         </div>
                         {activeCard.panel.extraSections?.map((section) => (
                             <div className="afg-expanded-extra-section" key={section.id}>
-                                <h3>{section.heading}</h3>
+                                {section.heading && (
+                                    <h3 className={section.id === 'early-prototypes' ? 'afg-heading-title-size' : ''}>
+                                        {section.heading}
+                                    </h3>
+                                )}
                                 {section.subtitle && <p className="afg-expanded-extra-subtitle">{section.subtitle}</p>}
+                                {section.subheading && <h4 className="afg-expanded-extra-subheading">{section.subheading}</h4>}
+                                {section.subheadingText && <p className="afg-expanded-extra-subtitle">{section.subheadingText}</p>}
                                 {section.bullets && (
                                     <ul className="afg-expanded-extra-bullets">
                                         {section.bullets.map((bullet) => (
@@ -543,7 +888,12 @@ export default function AxialFluxGeneratorPage() {
                                                 src={src}
                                                 alt={section.heading}
                                                 loading="lazy"
-                                                style={src.includes('build-1') ? { objectPosition: 'center 75%' } : undefined}
+                                                style={
+                                                    src.includes('build-1') ? { objectPosition: 'center 75%' }
+                                                    : src.includes('closeup-collar') ? { objectPosition: 'center 75%' }
+                                                    : src.includes('through-hole-screw') ? { objectPosition: '65% 65%' }
+                                                    : undefined
+                                                }
                                             />
                                         ))}
                                     </div>
@@ -551,8 +901,36 @@ export default function AxialFluxGeneratorPage() {
                                     // a single image (e.g. a chart) shows at its own natural aspect
                                     // ratio, uncropped — the side-by-side gallery above is only for
                                     // when there are two photos to crop into matching boxes
-                                    <img className="afg-expanded-extra-image" src={section.images[0]} alt={section.heading} loading="lazy" />
+                                    <img
+                                        className={`afg-expanded-extra-image ${['spin-test', 'voltage-sag', 'custom-gears'].includes(section.id) ? 'afg-gear-ratio-graph' : ''}`}
+                                        src={section.images[0]}
+                                        alt={section.heading}
+                                        loading="lazy"
+                                    />
                                 ) : null}
+                                {section.carousel && (
+                                    <SolidworksCarousel items={section.carousel} heading={section.heading} />
+                                )}
+                                {section.engineering && (
+                                    <div className="project-engineering-grid">
+                                        {section.engineering.map((item) => (
+                                            <div className="project-engineering-card" key={item.challenge}>
+                                                <h4>{item.challenge}</h4>
+                                                {item.description && <p>{item.description}</p>}
+                                                {item.test && <p><strong>Test:</strong> {item.test}</p>}
+                                                {item.outcome && <p><strong>Outcome:</strong> {item.outcome}</p>}
+                                                {item.image && (
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.challenge}
+                                                        loading="lazy"
+                                                        className="project-engineering-card-img"
+                                                    />
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
