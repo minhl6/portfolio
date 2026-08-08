@@ -49,7 +49,7 @@ export default function Home() {
                     </div>
                     <div className="hero-photo fade-in">
                         <img
-                            src="https://picsum.photos/seed/minh-le-profile/640/640"
+                            src={`${import.meta.env.BASE_URL}profile-photo.jpeg`}
                             alt="Portrait of Minh Le"
                             width="640"
                             height="640"
