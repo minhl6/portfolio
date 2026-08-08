@@ -176,6 +176,82 @@
     object-position: 64% center;
 }
 
+.afg-media-shift-down {
+    object-position: center 70%;
+}
+
+/* Measurement & Electronics intro: description on the left, flowchart
+   diagram on the right, matching the "How it Works?" text/diagram row on
+   the overview page but scoped to this card's panel. */
+.afg-measurement-intro {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+}
+
+.afg-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.afg-photo-grid figure {
+    margin: 0;
+}
+
+.afg-photo-grid img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+}
+
+.afg-photo-grid figcaption {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+@media (max-width: 720px) {
+    .afg-photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.afg-measurement-intro p {
+    flex: 1 1 55%;
+    min-width: 16rem;
+    margin: 0;
+}
+
+.afg-measurement-intro-media {
+    flex: 1 1 45%;
+    max-width: 45%;
+}
+
+.afg-measurement-intro-media img {
+    display: block;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.afg-measurement-intro-media.project-detail-video {
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .afg-measurement-intro {
+        flex-direction: column;
+    }
+
+    .afg-measurement-intro-media {
+        max-width: 100%;
+    }
+}
+
 /* crops in on a video/image that has extra whitespace margin around the
    model — scale is applied to the element itself (not a wrapper) so it
    still participates correctly in the FLIP grow/shrink measurement */
@@ -224,7 +300,7 @@
 
 .afg-exploded-lines line {
     stroke: var(--color-text);
-    stroke-width: 1;
+    stroke-width: 2;
     vector-effect: non-scaling-stroke;
     opacity: 0;
     transition: opacity 0.35s ease;

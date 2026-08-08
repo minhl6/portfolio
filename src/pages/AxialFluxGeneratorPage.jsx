@@ -35,6 +35,26 @@ const REAL_PHOTO_LABELS = [
     { id: 'gearbox', text: 'Gearbox', label: [46.3, 19.2], anchors: [[35.0, 44.9]] },
 ];
 
+// same [x%, y%] label/anchors scheme as GENERATOR_EXPLODED_LABELS — for the
+// Measurement & Electronics card's expanded hero photo. That card has no
+// video, so it doesn't go through the videoState 'ended' gating; labels
+// just show as soon as the card settles open (see labelsVisible below).
+const MEASUREMENT_LABELS = [
+    { id: 'hall-effect-sensor', text: 'Hall Effect Sensor', label: [25.7, 6.1], anchors: [[13.9, 6.3]] },
+    { id: 'arduino-nano', text: 'Arduino Nano', label: [28.4, 81.3], anchors: [[35.0, 74.3]] },
+    { id: 'buck-converter', text: 'Buck Converter', label: [63.5, 34.4], anchors: [[60.1, 42.4]] },
+    { id: 'ina219', text: 'INA219', label: [42.8, 49.0], anchors: [[38.5, 55.4]] },
+    { id: 'rectifier-circuit', text: 'Rectifier AC to DC\ncircuit (3 phase)', label: [41.1, 29.3], anchors: [[40.2, 37.6]] },
+    { id: 'laptop-csv-log', text: 'Laptop CSV log', label: [66.5, 12.6], anchors: [[78.4, 13.1]] },
+];
+
+const EFFICIENCY_TEST_PHOTOS = [
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/winding-rig.jpeg`, caption: 'Winding rig' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/drop-test-setup.jpeg`, caption: 'Drop test setup' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/7-foot-drop.jpeg`, caption: '7 foot drop' },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/measuring-weight.jpeg`, caption: 'Measuring weight' },
+];
+
 const SOLIDWORKS_VIEWS = [
     { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/solidworks-isometric.png`, caption: 'Isometric View' },
     { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/solidworks-top.png`, caption: 'Top View' },
@@ -47,6 +67,13 @@ const EARLY_PROTOTYPE_PHOTOS = [
     { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/v1-gearbox.jpeg`, caption: 'Fixed single-ratio gearbox' },
     { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gearbox-comparison.jpeg`, caption: 'Side-by-side comparison to final gearbox' },
     { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/fixed-gearbox-27x-iso.png`, caption: 'Fixed gearbox CAD model' },
+];
+
+const GENERATOR_GALLERY_PHOTOS = [
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gallery-1.jpeg` },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gallery-2.jpeg` },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gallery-3.jpeg` },
+    { image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/gallery-4.jpeg` },
 ];
 
 const GEARBOX_PROBLEMS_SOLVED = [
@@ -253,7 +280,7 @@ const CARDS = [
                 {
                     id: 'voltage-sag',
                     heading: 'Voltage Sag Under Load',
-                    subtitle: "The generator's voltage drops as it delivers more current. To measure it, I held a steady crank speed and swapped in different resistor loads, logging voltage and current at each. The points fall on a straight line whose slope lands close to the coil resistance I measured with a multimeter. This confirms the voltage sag comes mainly from coil resistance, a normal generator trait.",
+                    subtitle: "The generator's voltage drops as it delivers more current. To measure it, I held a steady crank speed and swapped in different resistor loads, logging voltage and current at each. The points fall on a straight line whose slope lands close to the coil resistance I measured with a multimeter. This confirms the voltage sag comes mainly from coil resistance, a normal generator trait. The sag test circuit ran on a solderless breadboard, so I capped the current at about half an amp to avoid overheating its connections, rather than push the setup toward failure.",
                     images: [
                         `${import.meta.env.BASE_URL}projects/axial-flux-generator/voltage-sag.png`,
                     ],
@@ -272,20 +299,35 @@ const CARDS = [
                         },
                     ],
                 },
+                {
+                    id: 'gallery',
+                    heading: 'Gallery',
+                    carousel: GENERATOR_GALLERY_PHOTOS,
+                },
             ],
         },
     },
     {
         id: 'measurement',
         title: 'Measurement & Electronics',
-        blurb: 'Voltage/current sensing and the electronics used to characterize output at each speed.',
-        image: 'https://picsum.photos/seed/afg-measurement-card/600/400',
+        blurb: 'How I measured voltage, current, RPM, and efficiency, from the sensors to the drop-weight rig I built.',
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/measurement-card.jpeg`,
+        explodedLabels: MEASUREMENT_LABELS,
+        caption: 'Every number in this project came from somewhere. This is how I measured voltage, current, rpm (speed), and the efficiency of my setup.',
         panel: {
-            text: 'Placeholder copy describing the measurement setup: sensing circuit, data logging, and how output was tested across crank speeds. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.',
-            images: [
-                'https://picsum.photos/seed/afg-measurement-1/500/360',
-                'https://picsum.photos/seed/afg-measurement-2/500/360',
-                'https://picsum.photos/seed/afg-measurement-3/500/360',
+            introRow: {
+                text: "The setup consists of a INA219 logging voltage and current, and a Hall sensor counting magnet pulses for RPM, both feeding an Arduino that streamed the data to a laptop as CSV. I put the INA on the generator side so it measured the part I designed, on either gear and any load. Since crank speed was back-calculated from the generator through the gear ratios, I confirmed the ratios directly by hand-counting generator turns per crank turn, so any belt slip under load was minimal. The one estimated number is the buck regulator's efficiency, assumed at about 85% rather than measured, since these converters typically run in that range.",
+                image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/measurement-flowchart.png`,
+                imageAlt: 'Measurement and Electronics flowchart: Hall effect sensor and INA219 feed an Arduino Nano over USB serial, which logs to a laptop CSV',
+            },
+            extraSections: [
+                {
+                    id: 'efficiency-measurement',
+                    heading: 'How I Measured Efficiency',
+                    subtitle: 'A known weight hangs from a string wound around a drum on the crank shaft, and as it falls it spins the generator. Once it reaches a steady speed, all of its power goes into the drivetrain, so the mechanical power in is just the weight times how fast it drops, and the electrical power out is voltage times current at that same moment. I 3D printed a custom rig and wound it with braided string, mounting the setup high enough that the weight had room to reach a steady speed before landing. To map efficiency across different speeds, I refilled the bottle with varying amounts of water and sand to change its weight, each one settling at a different steady speed and giving another point on the curve.',
+                    video: 'https://youtube.com/shorts/1pm7ADK1iT4',
+                    photoGrid: EFFICIENCY_TEST_PHOTOS,
+                },
             ],
         },
     },
@@ -458,12 +500,15 @@ export default function AxialFluxGeneratorPage() {
 
     // ==== TEMP DEV HELPER — delete this whole block + its onClick prop on
     // .afg-expanded-media below (search "TEMP DEV HELPER") once done ====
-    // Click anywhere on the paused exploded-view frame to log where you
-    // clicked as a % of the media box's own width/height (not raw pixels,
-    // so it stays correct however the box ends up sized) — for finding real
-    // values to plug into GENERATOR_EXPLODED_LABELS' anchor/label points.
+    // Click anywhere on the paused exploded-view frame (generator) or the
+    // settled hero photo (measurement, no video) to log where you clicked
+    // as a % of the media box's own width/height (not raw pixels, so it
+    // stays correct however the box ends up sized) — for finding real
+    // values to plug into GENERATOR_EXPLODED_LABELS/MEASUREMENT_LABELS'
+    // anchor/label points.
     const handleExplodedFrameDevClick = (e) => {
-        if (openCard !== 'generator' || videoState !== 'ended') return;
+        if (openCard === 'generator' && videoState !== 'ended') return;
+        if (openCard !== 'generator' && openCard !== 'measurement') return;
         const rect = e.currentTarget.getBoundingClientRect();
         const xPct = ((e.clientX - rect.left) / rect.width) * 100;
         const yPct = ((e.clientY - rect.top) / rect.height) * 100;
@@ -526,6 +571,10 @@ export default function AxialFluxGeneratorPage() {
     };
 
     const activeCard = openCard ? CARD_BY_ID[openCard] : null;
+    // labels show once settled open — for a card with a video (generator),
+    // that also waits for the video to finish playing; a card with no video
+    // (measurement) has nothing to wait on, so 'open' alone is enough
+    const labelsVisible = animPhase === 'open' && (!activeCard?.video || videoState === 'ended');
     // overview fades back in (and the panel starts fading out) the instant
     // 'closing' begins, concurrent with the image's shrink-back — not only
     // once 'idle' is fully reached, which would delay the fade-in until
@@ -721,7 +770,7 @@ export default function AxialFluxGeneratorPage() {
                                             shrink-back animation, however the user has scrolled/resized */}
                                         <img
                                             ref={(el) => cardImgRefsMap.current.set(card.id, el)}
-                                            className={card.mediaPosition ? 'afg-media-shift-right' : ''}
+                                            className={`${card.mediaPosition ? 'afg-media-shift-right' : ''} ${card.id === 'measurement' ? 'afg-media-shift-down' : ''}`}
                                             src={card.image}
                                             alt={card.title}
                                             loading="lazy"
@@ -793,7 +842,7 @@ export default function AxialFluxGeneratorPage() {
                             ) : (
                                 <img
                                     ref={flipImgRef}
-                                    className={`afg-expanded-image ${activeCard.mediaPosition ? 'afg-media-shift-right' : ''}`}
+                                    className={`afg-expanded-image ${activeCard.mediaPosition ? 'afg-media-shift-right' : ''} ${activeCard.id === 'measurement' ? 'afg-media-shift-down' : ''}`}
                                     src={activeCard.image}
                                     alt={activeCard.title}
                                 />
@@ -805,7 +854,7 @@ export default function AxialFluxGeneratorPage() {
                                 // via its own independent fixed-position FLIP, so leaving them
                                 // visible during close would strand them floating over the now-
                                 // empty spot instead of following the shrinking media.
-                                <div className={`afg-exploded-labels ${videoState === 'ended' && animPhase === 'open' ? 'is-visible' : ''}`}>
+                                <div className={`afg-exploded-labels ${labelsVisible ? 'is-visible' : ''}`}>
                                     <svg className="afg-exploded-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
                                         {/* one <line> per anchor — a label with multiple anchors (e.g.
                                             "Double 12 Magnet Rotors", "Frame") fans out several lines
@@ -842,7 +891,12 @@ export default function AxialFluxGeneratorPage() {
                                             className="afg-exploded-label-text"
                                             style={{ left: `${lbl.label[0]}%`, top: `${lbl.label[1]}%`, transitionDelay: `${i * 0.15}s` }}
                                         >
-                                            {lbl.text}
+                                            {lbl.text.split('\n').map((line, k, arr) => (
+                                                <span key={k}>
+                                                    {line}
+                                                    {k < arr.length - 1 && <br />}
+                                                </span>
+                                            ))}
                                         </span>
                                     ))}
                                 </div>
@@ -851,12 +905,27 @@ export default function AxialFluxGeneratorPage() {
                     </div>
 
                     <div className={`afg-expanded-body ${animPhase === 'open' ? 'is-settled' : ''}`}>
-                        <p>{activeCard.panel.text}</p>
-                        <div className="afg-expanded-gallery">
-                            {activeCard.panel.images.map((src) => (
-                                <img key={src} src={src} alt={`${activeCard.title} placeholder`} loading="lazy" />
-                            ))}
-                        </div>
+                        {activeCard.panel.introRow ? (
+                            <div className="afg-measurement-intro">
+                                <p>{activeCard.panel.introRow.text}</p>
+                                <div className="afg-measurement-intro-media">
+                                    <img
+                                        src={activeCard.panel.introRow.image}
+                                        alt={activeCard.panel.introRow.imageAlt || activeCard.title}
+                                        loading="lazy"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <p>{activeCard.panel.text}</p>
+                                <div className="afg-expanded-gallery">
+                                    {activeCard.panel.images.map((src) => (
+                                        <img key={src} src={src} alt={`${activeCard.title} placeholder`} loading="lazy" />
+                                    ))}
+                                </div>
+                            </>
+                        )}
                         {activeCard.panel.extraSections?.map((section) => (
                             <div className="afg-expanded-extra-section" key={section.id}>
                                 {section.heading && (
@@ -864,7 +933,24 @@ export default function AxialFluxGeneratorPage() {
                                         {section.heading}
                                     </h3>
                                 )}
-                                {section.subtitle && <p className="afg-expanded-extra-subtitle">{section.subtitle}</p>}
+                                {section.subtitle && !section.video && (
+                                    <p className="afg-expanded-extra-subtitle">{section.subtitle}</p>
+                                )}
+                                {section.video && (
+                                    <div className="afg-measurement-intro">
+                                        {section.subtitle && (
+                                            <p className="afg-expanded-extra-subtitle">{section.subtitle}</p>
+                                        )}
+                                        <div className="afg-measurement-intro-media project-detail-video">
+                                            <iframe
+                                                src={`${section.video.replace('youtube.com/shorts/', 'youtube.com/embed/')}?mute=1`}
+                                                title={section.heading || 'Project video'}
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                                 {section.subheading && <h4 className="afg-expanded-extra-subheading">{section.subheading}</h4>}
                                 {section.subheadingText && <p className="afg-expanded-extra-subtitle">{section.subheadingText}</p>}
                                 {section.bullets && (
@@ -910,6 +996,16 @@ export default function AxialFluxGeneratorPage() {
                                 ) : null}
                                 {section.carousel && (
                                     <SolidworksCarousel items={section.carousel} heading={section.heading} />
+                                )}
+                                {section.photoGrid && (
+                                    <div className="afg-photo-grid">
+                                        {section.photoGrid.map((item) => (
+                                            <figure key={item.image}>
+                                                <img src={item.image} alt={item.caption || section.heading} loading="lazy" />
+                                                {item.caption && <figcaption>{item.caption}</figcaption>}
+                                            </figure>
+                                        ))}
+                                    </div>
                                 )}
                                 {section.engineering && (
                                     <div className="project-engineering-grid">
