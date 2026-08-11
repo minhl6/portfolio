@@ -121,7 +121,6 @@ int readSmoothedPot(int joint) {
         tagline: 'A hand crank that powers different devices by switching gears to match each one\'s voltage',
         image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/card.jpeg`,
         tools: [],
-        underConstruction: true,
     },
     chompy: {
         // --- card / routing basics (match existing field names) ---
