@@ -1,4 +1,11 @@
 export const projects = {
+    'two-speed-hand-crank-generator': {
+        title: 'Two-Speed Hand-Crank Generator',
+        category: 'personal',
+        tagline: 'A hand crank that powers different devices by switching gears to match each one\'s voltage',
+        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/card.jpeg`,
+        tools: [],
+    },
     'robotic-arm-design': {
         title: 'Leader-Follower Robotic Arm',
         category: 'personal',
@@ -114,13 +121,6 @@ int readSmoothedPot(int joint) {
                 ],
             },
         ],
-    },
-    'two-speed-hand-crank-generator': {
-        title: 'Two-Speed Hand-Crank Generator',
-        category: 'personal',
-        tagline: 'A hand crank that powers different devices by switching gears to match each one\'s voltage',
-        image: `${import.meta.env.BASE_URL}projects/axial-flux-generator/card.jpeg`,
-        tools: [],
     },
     chompy: {
         // --- card / routing basics (match existing field names) ---

@@ -593,7 +593,7 @@ export default function AxialFluxGeneratorPage() {
 
                     <header className="project-detail-header">
                         <h1>{project.title}</h1>
-                        <p className="project-detail-tagline">A 3D printed hand-cranked generator that matches its own output voltage to the load using gear ratios, instead of electronics.</p>
+                        <p className="project-detail-tagline">A 3D printed hand-cranked generator that matches its own output voltage to the load using gear ratios, instead of electronics. It works on the same principle as the generators at the heart of wind, hydro, tidal, and geothermal power.</p>
                     </header>
 
                     <div className="project-detail-video">
