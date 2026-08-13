@@ -37,7 +37,7 @@ export default function Home() {
                             a second-year mechanical engineering student at UBC
                         </p>
                         <p className="hero-description">
-                            I like learning how something works and then building it for real, taking an idea from a CAD model to a part or system I can physically see. I'm working toward joining a design team and finding an engineering internship.
+                            I have a passion for learning new concepts and applying them in my own builds. I'm especially drawn to the mechanical side of sustainable technology and the part it can play in a greener future. Right now I'm looking to join a design team and find an engineering internship.
                         </p>
                         <div className="hero-actions">
                             <a href="#projects" className="btn btn-primary">View Projects</a>
