@@ -614,7 +614,7 @@ export default function AxialFluxGeneratorPage() {
                             producing 3-phase AC that is rectified to DC and smoothed by capacitors.
                             From there the output either drives a DC load directly or passes through
                             a 5V buck regulator to charge a phone over USB. High gear suits phone
-                            charging; low gear extends the usable range down to smaller loads.
+                            charging, while low gear extends the usable range down to smaller loads.
                         </p>
                         <div className="project-section-images afg-how-it-works-images">
                             {/* onClick is TEMP DEV HELPER 2 — see handleRealPhotoDevClick above */}
