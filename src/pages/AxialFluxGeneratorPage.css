@@ -147,6 +147,11 @@
 
 .afg-expanded-media {
     position: relative;
+    /* the exploded-label text/dots below size themselves off this box's
+       own rendered width (cqw), not the viewport, so the callouts stay
+       proportional to the media instead of overflowing it when the box
+       is narrow */
+    container-type: inline-size;
 }
 
 /* settled (in-flow) size/shape for the shared-element image (or, for the
@@ -315,9 +320,14 @@
     transform: translate(-50%, -40%);
     background: var(--color-bg);
     border: 1px solid var(--color-border);
-    padding: 0.15rem 0.55rem;
+    /* scale with the media box's own width (cqw) so the pill stays the
+       same size relative to the photo at every screen size, instead of
+       staying a fixed px size and overflowing a small photo; clamped so
+       it never gets unreadably small or, on a very wide box, larger than
+       it always used to look */
+    padding: clamp(0.06rem, 0.6cqw, 0.15rem) clamp(0.22rem, 2.2cqw, 0.55rem);
     border-radius: 999px;
-    font-size: 0.8rem;
+    font-size: clamp(0.48rem, 2.5cqw, 0.8rem);
     font-weight: 600;
     white-space: nowrap;
     text-align: center;
@@ -336,8 +346,10 @@
    preserveAspectRatio="none" and would stretch an SVG circle into an oval) */
 .afg-exploded-dot {
     position: absolute;
-    width: 6px;
-    height: 6px;
+    /* same cqw scaling as .afg-exploded-label-text above, so the dot
+       stays sized relative to the photo instead of a fixed 6px */
+    width: clamp(3px, 1.15cqw, 6px);
+    height: clamp(3px, 1.15cqw, 6px);
     border-radius: 50%;
     background: var(--color-text);
     transform: translate(-50%, -50%);
@@ -496,6 +508,9 @@
     aspect-ratio: 4 / 3;
     border-radius: 10px;
     overflow: hidden;
+    /* lets the exploded-label text/dots size off this box's own width —
+       see the comment on .afg-expanded-media above */
+    container-type: inline-size;
 }
 
 .afg-how-it-works-image img {
