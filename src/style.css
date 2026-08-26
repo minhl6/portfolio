@@ -396,6 +396,7 @@ section { padding: 4.5rem 0; }
 .project-detail-body { max-width: 100%; }
 
 .project-summary {
+    color: var(--color-muted);
     font-size: 1.1rem;
     margin-bottom: 1.25rem;
 }
