@@ -303,7 +303,9 @@ export default function ProjectDetail() {
 
                 <header className="project-detail-header">
                     <h1>{project.title}</h1>
-                    <p className="project-detail-tagline">{project.tagline}</p>
+                    {project.tagline && !project.hideTaglineOnDetail && (
+                        <p className="project-detail-tagline">{project.tagline}</p>
+                    )}
                     {project.tools.length > 0 && (
                         <ul className="project-tools">
                             {project.tools.map((tool) => (
@@ -313,6 +315,10 @@ export default function ProjectDetail() {
                     )}
                 </header>
 
+                {project.summaryAboveHero && project.summary && (
+                    <p className="project-summary">{project.summary}</p>
+                )}
+
                 {heroImage && (
                     <div className="project-detail-image">
                         <img src={heroImage} alt={heroAlt} onError={hideOnError} />
@@ -320,7 +326,9 @@ export default function ProjectDetail() {
                 )}
 
                 <div className="project-detail-body">
-                    {project.summary && <p className="project-summary">{project.summary}</p>}
+                    {!project.summaryAboveHero && project.summary && (
+                        <p className="project-summary">{project.summary}</p>
+                    )}
                     {project.overview && (
                         <>
                             <h3>The Problem</h3>

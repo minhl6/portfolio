@@ -10,6 +10,8 @@ export const projects = {
         title: 'Leader-Follower Robotic Arm',
         category: 'personal',
         tagline: 'A 4-DOF arm that mirrors a hand-held replica in real time, with record and playback',
+        hideTaglineOnDetail: true,
+        summaryAboveHero: true,
         tools: [],
 
         // Card thumbnail + big image at the top of the detail page.
